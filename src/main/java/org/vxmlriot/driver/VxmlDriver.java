@@ -11,9 +11,9 @@ public interface VxmlDriver {
 
     /**
      * Get a VXML document by URL
-     * @param url of the VXML to be loaded.
+     * @param resource identifying the VXML to be loaded.
      */
-    void get(String url);
+    void get(String resource);
 
     /**
      * Simulate user entering a string of DTMF digits
