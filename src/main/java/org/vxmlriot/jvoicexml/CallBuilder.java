@@ -16,7 +16,7 @@ public class CallBuilder {
     private static final Logger LOGGER = Logger.getLogger(CallBuilder.class);
     static final int TEXT_SERVER_PORT = 4242;
 
-    private JVoiceXmlMain jvxmlMain;
+    protected JVoiceXmlMain jvxmlMain;
 
     public void setJvxmlMain(JVoiceXmlMain jvxmlMain) {
         this.jvxmlMain = jvxmlMain;

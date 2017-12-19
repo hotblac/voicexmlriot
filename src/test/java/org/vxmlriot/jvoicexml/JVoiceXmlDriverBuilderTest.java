@@ -10,11 +10,19 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.vxmlriot.url.ClasspathFileUriBuilder;
+import org.vxmlriot.url.UriBuilder;
 
+import java.util.Collection;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.verifyNew;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
@@ -25,7 +33,7 @@ public class JVoiceXmlDriverBuilderTest {
 
     @Mock private JVoiceXmlMain jvxml;
     @Mock private JVoiceXmlDriverBuilder.JVoiceXmlStartupListener startupListener;
-    @InjectMocks private JVoiceXmlDriverBuilder factory;
+    @InjectMocks private JVoiceXmlDriverBuilder builder;
 
     @Before
     public void initMocks() throws Exception {
@@ -37,17 +45,47 @@ public class JVoiceXmlDriverBuilderTest {
             return null;
         }).when(jvxml).start();
     }
+
     @Test
-    public void createJvoiceXmlDriver_hasRequiredDependencies() {
-        JVoiceXmlDriver jvxmlDriver = factory.build();
+    public void buildJVoiceXmlDriver_hasDefaultDependencies() throws Exception {
+        JVoiceXmlDriver jvxmlDriver = builder.build();
         assertNotNull(jvxmlDriver.callBuilder);
-        assertNotNull(jvxmlDriver.uriBuilder);
+        assertThat(jvxmlDriver.uriBuilder, instanceOf(ClasspathFileUriBuilder.class));
+        verifyNew(JVoiceXmlMain.class).withArguments(any(EmbeddedTextConfiguration.class));
     }
 
+    @Test
+    public void buildJVoiceXmlDriver_startsJvxmlInterpreter() throws Exception {
+        builder.build();
+        verify(jvxml).start();
+    }
 
     @Test
-    public void createJvoiceXmlDriver_startsJvxmlInterpreter() throws Exception {
-        JVoiceXmlDriver jvxmlDriver = factory.build();
-        verify(jvxml).start();
+    public void buildJVoiceXmlDriverWithAlternativeConfiguration() throws Exception {
+        Configuration alternativeConfig = new AlternativeConfiguration();
+        builder.config(alternativeConfig).build();
+        verifyNew(JVoiceXmlMain.class).withArguments(alternativeConfig);
+    }
+
+    @Test
+    public void buildJVoiceXmlDriverWithAlternativeUriBuilder() {
+        UriBuilder alternativeUriBuilder = resource -> null;
+        JVoiceXmlDriver jvxmlDriver = builder.uriBuilder(alternativeUriBuilder).build();
+        assertEquals(alternativeUriBuilder, jvxmlDriver.uriBuilder);
+    }
+
+    private class AlternativeConfiguration implements Configuration {
+        @Override
+        public <T> Collection<T> loadObjects(Class<T> baseClass, String root) {
+            return null;
+        }
+        @Override
+        public <T> T loadObject(Class<T> baseClass, String key) {
+            return null;
+        }
+        @Override
+        public <T> T loadObject(Class<T> baseClass) {
+            return null;
+        }
     }
 }

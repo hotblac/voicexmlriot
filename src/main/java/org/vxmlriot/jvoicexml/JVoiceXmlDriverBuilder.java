@@ -5,18 +5,31 @@ import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.JVoiceXmlMainListener;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
+import org.vxmlriot.url.UriBuilder;
 
 import java.util.concurrent.CountDownLatch;
 
 /**
  * Build instances of JVoiceXmlDriver.
+ * Defaults are provided for dependent objects and can be overridden using the Builder pattern.
  */
 public class JVoiceXmlDriverBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverBuilder.class);
 
     private Configuration config = new EmbeddedTextConfiguration();
+    private UriBuilder uriBuilder = new ClasspathFileUriBuilder();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
+
+    public JVoiceXmlDriverBuilder config(Configuration config) {
+        this.config = config;
+        return this;
+    }
+
+    public JVoiceXmlDriverBuilder uriBuilder(UriBuilder uriBuilder) {
+        this.uriBuilder = uriBuilder;
+        return this;
+    }
 
     public JVoiceXmlDriver build() {
         JVoiceXmlDriver driver = new JVoiceXmlDriver();
@@ -27,7 +40,7 @@ public class JVoiceXmlDriverBuilder {
         callBuilder.setJvxmlMain(jvxmlMain);
         driver.callBuilder = callBuilder;
 
-        driver.uriBuilder = new ClasspathFileUriBuilder();
+        driver.uriBuilder = uriBuilder;
         return driver;
     }
 
