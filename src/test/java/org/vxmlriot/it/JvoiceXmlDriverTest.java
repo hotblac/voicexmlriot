@@ -3,7 +3,7 @@ package org.vxmlriot.it;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.vxmlriot.driver.JvoiceXmlDriver;
+import org.vxmlriot.jvoicexml.JvoiceXmlDriver;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
 

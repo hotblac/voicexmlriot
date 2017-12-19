@@ -1,8 +1,7 @@
-package org.vxmlriot.driver;
+package org.vxmlriot.jvoicexml;
 
+import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.exception.DriverException;
-import org.vxmlriot.jvoicexml.Call;
-import org.vxmlriot.jvoicexml.CallBuilder;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
 

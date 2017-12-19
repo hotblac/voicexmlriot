@@ -1,4 +1,4 @@
-package org.vxmlriot.driver;
+package org.vxmlriot.jvoicexml;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.Call;
 import org.vxmlriot.jvoicexml.CallBuilder;
+import org.vxmlriot.jvoicexml.JvoiceXmlDriver;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
 
