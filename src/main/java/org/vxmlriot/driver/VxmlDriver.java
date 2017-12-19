@@ -15,6 +15,7 @@ public interface VxmlDriver {
      * Get a VXML document by URL
      * @param resource identifying the VXML to be loaded.
      * @throws DriverException on failure of underlying driver
+     * @throws IllegalArgumentException on invalid resource
      */
     void get(String resource) throws DriverException;
 

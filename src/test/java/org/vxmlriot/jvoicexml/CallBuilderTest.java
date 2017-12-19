@@ -32,7 +32,7 @@ public class CallBuilderTest {
     @Mock private Configuration config;
     @Mock private JVoiceXmlMain jvxml;
     @Mock private TextServer textServer;
-    @Mock private JVoiceXmlStartupListener startupListener;
+    @Mock private CallBuilder.JVoiceXmlStartupListener startupListener;
     @Mock private Session session;
     @InjectMocks private CallBuilder builder;
 

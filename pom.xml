@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
+            <artifactId>org.jvoicexml.client</artifactId>
+            <version>${jvoicexml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.client.text</artifactId>
             <version>${jvoicexml.version}</version>
         </dependency>
@@ -35,6 +40,11 @@
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.implementation.text</artifactId>
+            <version>${jvoicexml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvoicexml</groupId>
+            <artifactId>org.jvoicexml.processor.srgs</artifactId>
             <version>${jvoicexml.version}</version>
         </dependency>
         <dependency>
@@ -51,9 +61,24 @@
         <!-- Dependencies of JVoiceXML must be explicitly included.
              JVoiceXML 0.7.7.GA has no transitive dependency management -->
         <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.2.2.v20140723</version>
         </dependency>
 
         <!-- Test -->

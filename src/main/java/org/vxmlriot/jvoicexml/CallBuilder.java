@@ -7,6 +7,7 @@ import org.jvoicexml.event.ErrorEvent;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 
 import java.net.UnknownHostException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Build a new call
@@ -17,7 +18,7 @@ public class CallBuilder {
     static final int TEXT_SERVER_PORT = 4242;
 
     private Configuration config;
-    private JVoiceXmlStartupListener startupListener;
+    private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
 
     public void setConfig(Configuration config) {
         this.config = config;
@@ -44,16 +45,18 @@ public class CallBuilder {
         }
     }
 
-    private JVoiceXmlMain startJvxmlInterpreter() {
+    private synchronized JVoiceXmlMain startJvxmlInterpreter() {
         final JVoiceXmlMain jvxml = new JVoiceXmlMain(config);
+
+        startupListener.reset();
         jvxml.addListener(startupListener);
         jvxml.start();
-
         startupListener.waitForStartup();
+
         return jvxml;
     }
 
-    private TextServer startTextServer() {
+    private synchronized TextServer startTextServer() {
         final TextServer textServer = new TextServer(TEXT_SERVER_PORT);
         textServer.start();
         try {
@@ -64,6 +67,39 @@ public class CallBuilder {
             LOGGER.warn("Interrupted during TextServer startup");
         }
         return textServer;
+    }
+
+
+    public class JVoiceXmlStartupListener implements JVoiceXmlMainListener {
+
+        private CountDownLatch startupLatch = new CountDownLatch(1);
+
+        void reset() {
+            startupLatch = new CountDownLatch(1);
+        }
+
+        void waitForStartup() {
+            try {
+                startupLatch.await();
+            } catch (InterruptedException e) {
+                LOGGER.warn("Interrupted on waiting for JVoiceXML to start", e);
+            }
+        }
+
+        @Override
+        public void jvxmlStarted() {
+            startupLatch.countDown();
+        }
+
+        @Override
+        public void jvxmlTerminated() {
+        }
+
+        @Override
+        public void jvxmlStartupError(final Throwable exception) {
+            LOGGER.error("error starting JVoiceXML", exception);
+            startupLatch.countDown(); // cancel
+        }
     }
 
 }
