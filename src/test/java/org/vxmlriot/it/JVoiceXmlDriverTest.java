@@ -3,7 +3,7 @@ package org.vxmlriot.it;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.vxmlriot.jvoicexml.JvoiceXmlDriver;
+import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
 
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Integration test of the JvoiceXml driver implementation
  */
-public class JvoiceXmlDriverTest {
+public class JVoiceXmlDriverTest {
 
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
@@ -27,7 +27,7 @@ public class JvoiceXmlDriverTest {
 
     @Test
     public void factory_buildsJvoiceXmlDriver() {
-        assertThat(driver, instanceOf(JvoiceXmlDriver.class));
+        assertThat(driver, instanceOf(JVoiceXmlDriver.class));
     }
 
     @Test

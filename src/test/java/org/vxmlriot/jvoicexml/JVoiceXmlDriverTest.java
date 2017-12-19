@@ -7,9 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.vxmlriot.exception.DriverException;
-import org.vxmlriot.jvoicexml.Call;
-import org.vxmlriot.jvoicexml.CallBuilder;
-import org.vxmlriot.jvoicexml.JvoiceXmlDriver;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
 
@@ -22,7 +19,7 @@ import static org.mockito.Mockito.when;
  * Tests for the JVoiceXML implementation of VxmlDriver
  */
 @RunWith(MockitoJUnitRunner.class)
-public class JvoiceXmlDriverTest {
+public class JVoiceXmlDriverTest {
 
     private static final String START = "http://example.com/START.vxml";
     private static final URI START_URI = URI.create(START);
@@ -30,7 +27,7 @@ public class JvoiceXmlDriverTest {
     @Mock private Call call;
     @Mock private UriBuilder uriBuilder;
     @Mock private CallBuilder callBuilder;
-    @InjectMocks private JvoiceXmlDriver driver;
+    @InjectMocks private JVoiceXmlDriver driver;
 
     @Before
     public void setUp() throws Exception {

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Drives VXML interactions, implemented by the JVoiceXML library.
  */
-public class JvoiceXmlDriver implements VxmlDriver {
+public class JVoiceXmlDriver implements VxmlDriver {
 
     protected UriBuilder uriBuilder;
     protected CallBuilder callBuilder;

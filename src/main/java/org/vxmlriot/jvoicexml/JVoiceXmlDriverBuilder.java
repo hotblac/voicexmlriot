@@ -8,15 +8,18 @@ import org.vxmlriot.url.ClasspathFileUriBuilder;
 
 import java.util.concurrent.CountDownLatch;
 
-public class JvoiceXmlDriverFactory {
+/**
+ * Build instances of JVoiceXmlDriver.
+ */
+public class JVoiceXmlDriverBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(JvoiceXmlDriverFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverBuilder.class);
 
     private Configuration config = new EmbeddedTextConfiguration();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
 
-    public JvoiceXmlDriver getDriver() {
-        JvoiceXmlDriver driver = new JvoiceXmlDriver();
+    public JVoiceXmlDriver build() {
+        JVoiceXmlDriver driver = new JVoiceXmlDriver();
 
         final JVoiceXmlMain jvxmlMain = startJvxmlInterpreter();
 

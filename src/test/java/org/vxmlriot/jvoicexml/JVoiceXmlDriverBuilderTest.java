@@ -18,14 +18,14 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
-        JvoiceXmlDriverFactory.class,
+        JVoiceXmlDriverBuilder.class,
         JVoiceXmlMain.class
 })
-public class JvoiceXmlDriverFactoryTest {
+public class JVoiceXmlDriverBuilderTest {
 
     @Mock private JVoiceXmlMain jvxml;
-    @Mock private JvoiceXmlDriverFactory.JVoiceXmlStartupListener startupListener;
-    @InjectMocks private JvoiceXmlDriverFactory factory;
+    @Mock private JVoiceXmlDriverBuilder.JVoiceXmlStartupListener startupListener;
+    @InjectMocks private JVoiceXmlDriverBuilder factory;
 
     @Before
     public void initMocks() throws Exception {
@@ -39,7 +39,7 @@ public class JvoiceXmlDriverFactoryTest {
     }
     @Test
     public void createJvoiceXmlDriver_hasRequiredDependencies() {
-        JvoiceXmlDriver jvxmlDriver = factory.getDriver();
+        JVoiceXmlDriver jvxmlDriver = factory.build();
         assertNotNull(jvxmlDriver.callBuilder);
         assertNotNull(jvxmlDriver.uriBuilder);
     }
@@ -47,7 +47,7 @@ public class JvoiceXmlDriverFactoryTest {
 
     @Test
     public void createJvoiceXmlDriver_startsJvxmlInterpreter() throws Exception {
-        JvoiceXmlDriver jvxmlDriver = factory.getDriver();
+        JVoiceXmlDriver jvxmlDriver = factory.build();
         verify(jvxml).start();
     }
 }

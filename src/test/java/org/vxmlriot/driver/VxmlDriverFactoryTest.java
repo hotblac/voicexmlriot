@@ -1,7 +1,7 @@
 package org.vxmlriot.driver;
 
 import org.junit.Test;
-import org.vxmlriot.jvoicexml.JvoiceXmlDriver;
+import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -13,6 +13,6 @@ public class VxmlDriverFactoryTest {
     public void getDriver_returnsJvoiceXmlDriver() {
         VxmlDriver driver = VxmlDriverFactory.getDriver();
         assertNotNull(driver);
-        assertThat(driver, instanceOf(JvoiceXmlDriver.class));
+        assertThat(driver, instanceOf(JVoiceXmlDriver.class));
     }
 }
