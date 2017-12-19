@@ -1,5 +1,7 @@
 package org.vxmlriot.driver;
 
+import org.vxmlriot.exception.DriverException;
+
 import java.util.List;
 
 /**
@@ -12,8 +14,9 @@ public interface VxmlDriver {
     /**
      * Get a VXML document by URL
      * @param resource identifying the VXML to be loaded.
+     * @throws DriverException on failure of underlying driver
      */
-    void get(String resource);
+    void get(String resource) throws DriverException;
 
     /**
      * Simulate user entering a string of DTMF digits
