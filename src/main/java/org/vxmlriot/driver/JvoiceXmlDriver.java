@@ -40,6 +40,13 @@ public class JvoiceXmlDriver implements VxmlDriver {
     }
 
     @Override
+    public void hangup() {
+        if (call != null) {
+            call.shutdown();
+        }
+    }
+
+    @Override
     public List<String> getTextResponse() {
         return null;
     }

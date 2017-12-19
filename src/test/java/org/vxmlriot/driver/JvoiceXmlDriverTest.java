@@ -62,4 +62,10 @@ public class JvoiceXmlDriverTest {
                 .thenThrow(new JvoiceXmlStartupException("Simulated JVoiceXml failure"));
         driver.get(START);
     }
+
+    @Test
+    public void hangup_clearsDownCall() {
+        driver.hangup();
+        verify(call).shutdown();
+    }
 }

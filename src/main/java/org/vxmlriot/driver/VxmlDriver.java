@@ -26,10 +26,17 @@ public interface VxmlDriver {
     void enterDtmf(String digits);
 
     /**
-     * Smimulate user saying a sequence of utterances
+     * Simulate user saying a sequence of utterances
      * @param utterance spoken by user
      */
     void say(String... utterance);
+
+    /**
+     * End the current call.
+     * This is necessary only to end a call before the VXML flow completes.
+     * If the VXML flow completes, it will end the call automatically.
+     */
+    void hangup();
 
     /**
      * Text response spoken by VXML document. Typically, a VXML browser would
