@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class JvoiceXmlDriver implements VxmlDriver {
 
-    private UriBuilder uriBuilder;
-    private CallBuilder callBuilder;
+    protected UriBuilder uriBuilder;
+    protected CallBuilder callBuilder;
     private Call call;
 
     @Override
