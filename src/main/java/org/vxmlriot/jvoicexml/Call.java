@@ -8,11 +8,9 @@ import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
-import org.vxmlriot.jvoicexml.listener.TextListenerAdapter;
+import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
@@ -46,6 +44,7 @@ public class Call {
         this.session = session;
         this.textServer = textServer;
         session.addSessionListener(new SessionEndListener());
+        this.textServer.addTextListener(responseListener);
     }
 
     /**
@@ -65,7 +64,7 @@ public class Call {
      * Get the SSML (speech synthesis) response to the last request.
      * This method will block until all responses are received.
      * @return List of SsmlDocuments. A single VXML page with multiple
-     *         speec sections will return multiple responses.
+     *         speech sections will return multiple responses.
      */
     public List<SsmlDocument> getSsmlResponse() {
         return responseListener.getCapturedResponses();
@@ -92,24 +91,6 @@ public class Call {
         public void sessionEnded(Session session) {
             LOGGER.debug("Session ended");
             shutdown();
-        }
-    }
-
-
-    class ResponseListener extends TextListenerAdapter {
-
-        private final List<SsmlDocument> capturedResponses = Collections.synchronizedList(new ArrayList<>());
-
-        @Override
-        public void outputSsml(SsmlDocument document) {
-            capturedResponses.add(document);
-        }
-
-        List<SsmlDocument> getCapturedResponses() {
-            synchronized (capturedResponses) {
-                // Return a copy of the list to prevent concurrent modification
-                return new ArrayList<>(capturedResponses);
-            }
         }
     }
 }

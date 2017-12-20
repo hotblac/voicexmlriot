@@ -1,5 +1,6 @@
 package org.vxmlriot.jvoicexml;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvoicexml.Session;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
+import org.vxmlriot.jvoicexml.listener.ResponseListener;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -19,10 +21,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +37,13 @@ public class CallTest {
 
     @Mock private Session session;
     @Mock private TextServer textServer;
+    @Mock private ResponseListener responseListener;
     @InjectMocks private Call call;
+
+    @Before
+    public void setUp() {
+        call.responseListener = responseListener;
+    }
 
     @Test
     public void call_makesACall() throws Exception, ErrorEvent {
@@ -55,13 +63,14 @@ public class CallTest {
 
         call.call(VXML_URI);
 
-        final SsmlDocument response1 = getSsmlDocument("ssmlTextResponse_helloWorld.xml");
-        final SsmlDocument response2 = getSsmlDocument("ssmlTextResponse_goodbye.xml");
-        call.responseListener.outputSsml(response1);
-        call.responseListener.outputSsml(response2);
+        final List<SsmlDocument> ssmlDocumentResponses = Arrays.asList(
+                getSsmlDocument("ssmlTextResponse_helloWorld.xml"),
+                getSsmlDocument("ssmlTextResponse_goodbye.xml")
+        );
+        when(responseListener.getCapturedResponses()).thenReturn(ssmlDocumentResponses);
 
         List<SsmlDocument> responses = call.getSsmlResponse();
-        assertThat(responses, contains(response1, response2));
+        assertEquals(ssmlDocumentResponses, responses);
     }
 
     @Test

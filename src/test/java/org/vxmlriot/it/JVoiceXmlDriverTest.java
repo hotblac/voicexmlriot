@@ -2,7 +2,6 @@ package org.vxmlriot.it;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
@@ -67,7 +66,6 @@ public class JVoiceXmlDriverTest {
         driver.get("hello.vxml");
     }
 
-    @Ignore("TODO")
     @Test
     public void getTextResponse_returnsAllResponses() throws Exception {
         driver.get("hello.vxml");
