@@ -7,20 +7,35 @@ import org.junit.runner.RunWith;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.event.error.BadFetchError;
+import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.exception.CallIsActiveException;
+import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+
 
 /**
  * Tests for the JVoiceXML implementation of VxmlDriver
@@ -49,7 +64,7 @@ public class JVoiceXmlDriverTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         driver.hangup();
     }
 
@@ -93,6 +108,31 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
+    public void getTextResponse_returnsAllResponses() throws Exception {
+
+        when(call.getLastResponse()).thenReturn(Arrays.asList(
+                getSsmlDocument("ssmlTextResponse_helloWorld.xml"),
+                getSsmlDocument("ssmlTextResponse_goodbye.xml")
+        ));
+
+        driver.get(START);
+        List<String> response = driver.getTextResponse();
+        assertThat(response, contains("Hello World!", "Goodbye!"));
+    }
+
+    @Test(expected = CallNotActiveException.class)
+    public void getTextResponseWhenNoCallActive_throwsException() throws Exception {
+        driver.getTextResponse();
+    }
+
+    @Test(expected = DriverException.class)
+    public void getTextResponseWhenNoResponseReceived_throwsException() throws Exception {
+        when(call.getLastResponse()).thenReturn(null);
+        driver.get(START);
+        driver.getTextResponse();
+    }
+
+    @Test
     public void shutdown_clearsDownCall() throws Exception {
         driver.get(START);
         driver.shutdown();
@@ -119,5 +159,11 @@ public class JVoiceXmlDriverTest {
     public void shutdown_stopsDocumentServer() {
         driver.shutdown();
         verify(documentServer).stop();
+    }
+
+    private SsmlDocument getSsmlDocument(String filename) throws ParserConfigurationException, SAXException, IOException {
+        final InputStream vxmlInput = getClass().getClassLoader().getResourceAsStream(filename);
+        final InputSource vxmlSource = new InputSource(vxmlInput);
+        return new SsmlDocument(vxmlSource);
     }
 }

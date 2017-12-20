@@ -1,5 +1,6 @@
 package org.vxmlriot.jvoicexml;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvoicexml.Session;
@@ -14,6 +15,7 @@ import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 
 import java.net.URI;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +41,13 @@ public class CallTest {
         when(session.call(any(URI.class)))
                 .thenThrow(new BadFetchError("Simulated bad fetch error"));
         call.call(VXML_URI);
+    }
+
+    @Test
+    @Ignore("TODO")
+    public void getLastResponse_returnsSsmlDocument() {
+        call.getLastResponse();
+        fail("test not complete");
     }
 
     @Test

@@ -2,8 +2,10 @@ package org.vxmlriot.jvoicexml;
 
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
+import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.exception.CallIsActiveException;
+import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
@@ -11,6 +13,9 @@ import org.vxmlriot.url.UriBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 /**
  * Drives VXML interactions, implemented by the JVoiceXML library.
@@ -66,8 +71,17 @@ public class JVoiceXmlDriver implements VxmlDriver {
     }
 
     @Override
-    public List<String> getTextResponse() {
-        return null;
+    public List<String> getTextResponse() throws DriverException {
+        if (!callIsActive()) {
+            throw new CallNotActiveException("Cannot get text response - no call is active");
+        }
+
+        List<SsmlDocument> responseDocuments = call.getLastResponse();
+        // TODO: wait for a response
+        if (isEmpty(responseDocuments)) {
+            throw new DriverException("No response received");
+        }
+        return parseTextResponses(responseDocuments);
     }
 
     @Override
@@ -102,5 +116,11 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     private boolean callIsActive() {
         return call != null;
+    }
+
+    private List<String> parseTextResponses(List<SsmlDocument> documents) {
+        return documents.stream()
+                .map(doc -> doc.getSpeak().getTextContent())
+                .collect(Collectors.toList());
     }
 }

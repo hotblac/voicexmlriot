@@ -1,6 +1,7 @@
 package org.vxmlriot.driver;
 
 import org.vxmlriot.exception.CallIsActiveException;
+import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 
 import java.util.List;
@@ -44,8 +45,10 @@ public interface VxmlDriver {
      * Text response spoken by VXML document. Typically, a VXML browser would
      * render this via TTS.
      * @return list of text responses of current document
+     * @throws CallNotActiveException if no call is in progress
+     * @throws DriverException on failure of underlying driver
      */
-    List<String> getTextResponse();
+    List<String> getTextResponse() throws DriverException;
 
     /**
      * Audio source files played by VXML document.

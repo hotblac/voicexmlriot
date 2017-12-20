@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<speak xmlns="http://www.w3.org/2001/10/synthesis"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       version="1.0"
+       xml:lang="en-GB"
+       xsi:schemaLocation="http://www.w3.org/2001/10/synthesis
+           http://www.w3.org/TR/speech-synthesis/synthesis.xsd">Hello World!</speak>

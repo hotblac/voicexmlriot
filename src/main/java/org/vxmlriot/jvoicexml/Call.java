@@ -6,9 +6,12 @@ import org.jvoicexml.Session;
 import org.jvoicexml.SessionListener;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
+import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
+import org.vxmlriot.jvoicexml.listener.TextListenerAdapter;
 
 import java.net.URI;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -54,6 +57,10 @@ public class Call {
         }
     }
 
+    public List<SsmlDocument> getLastResponse() {
+        return null;
+    }
+
     public void shutdown() {
         textServer.stopServer();
 
@@ -66,7 +73,7 @@ public class Call {
         }
     }
 
-    class SessionEndListener implements SessionListener {
+    private class SessionEndListener implements SessionListener {
 
         @Override
         public void sessionStarted(Session session) {}
@@ -75,6 +82,14 @@ public class Call {
         public void sessionEnded(Session session) {
             LOGGER.debug("Session ended");
             shutdown();
+        }
+    }
+
+
+    private class ResponseListener extends TextListenerAdapter {
+        @Override
+        public void outputSsml(SsmlDocument document) {
+
         }
     }
 }
