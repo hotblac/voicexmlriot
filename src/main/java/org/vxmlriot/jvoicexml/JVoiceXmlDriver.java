@@ -4,6 +4,7 @@ import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.exception.DriverException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
 
@@ -38,6 +39,8 @@ public class JVoiceXmlDriver implements VxmlDriver {
             call.call(uri);
         } catch (JvoiceXmlStartupException e) {
             throw new DriverException("Failed to start JVoiceXML", e);
+        } catch(JVoiceXmlErrorEventException e) {
+            throw new DriverException("Failed to make the call", e);
         }
     }
 

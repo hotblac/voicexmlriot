@@ -5,6 +5,8 @@ import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.Session;
 import org.jvoicexml.SessionListener;
 import org.jvoicexml.client.text.TextServer;
+import org.jvoicexml.event.ErrorEvent;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 
 import java.net.URI;
 
@@ -42,9 +44,14 @@ public class Call {
     /**
      * Call the VXML application at given URI
      * @param uri of the VXML application
+     * @throws JVoiceXmlErrorEventException on JVoiceXML error event
      */
-    public void call(URI uri) {
-
+    public void call(URI uri) throws JVoiceXmlErrorEventException {
+        try {
+            session.call(uri);
+        } catch (ErrorEvent errorEvent) {
+            throw new JVoiceXmlErrorEventException(errorEvent);
+        }
     }
 
     public void shutdown() {

@@ -22,12 +22,12 @@ public class JVoiceXmlDriverTest {
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
     @After
-    public void endCall() throws Exception {
+    public void endCall() {
         driver.hangup();
     }
 
     @AfterClass
-    public static void stopDriver() throws Exception {
+    public static void stopDriver() {
         driver.shutdown();
     }
 

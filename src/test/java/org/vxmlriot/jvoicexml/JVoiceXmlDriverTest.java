@@ -5,16 +5,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
+import org.jvoicexml.event.error.BadFetchError;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.exception.DriverException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
 
 import java.net.URI;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +70,13 @@ public class JVoiceXmlDriverTest {
     public void getStartupFailure_throwsException() throws Exception {
         when(callBuilder.build())
                 .thenThrow(new JvoiceXmlStartupException("Simulated JVoiceXml failure"));
+        driver.get(START);
+    }
+
+    @Test(expected = DriverException.class)
+    public void getCallFailure_throwsException() throws Exception {
+        doThrow(new JVoiceXmlErrorEventException(new BadFetchError("Simulated call failure")))
+                .when(call).call(any(URI.class));
         driver.get(START);
     }
 
