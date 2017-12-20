@@ -1,5 +1,7 @@
 package org.vxmlriot.jvoicexml;
 
+import org.jvoicexml.DocumentServer;
+import org.jvoicexml.JVoiceXmlMain;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
@@ -16,6 +18,17 @@ public class JVoiceXmlDriver implements VxmlDriver {
     protected UriBuilder uriBuilder;
     protected CallBuilder callBuilder;
     private Call call;
+
+    public JVoiceXmlDriver() {
+    }
+
+    public void setUriBuilder(UriBuilder uriBuilder) {
+        this.uriBuilder = uriBuilder;
+    }
+
+    public void setCallBuilder(CallBuilder callBuilder) {
+        this.callBuilder = callBuilder;
+    }
 
     @Override
     public void get(String resource) throws DriverException {
@@ -40,9 +53,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     @Override
     public void hangup() {
-        if (call != null) {
-            call.shutdown();
-        }
+        endCall();
     }
 
     @Override
@@ -53,5 +64,29 @@ public class JVoiceXmlDriver implements VxmlDriver {
     @Override
     public List<String> getAudioSrc() {
         return null;
+    }
+
+    @Override
+    public void shutdown() {
+
+        endCall();
+
+        JVoiceXmlMain jvxml = callBuilder.getJvxmlMain();
+
+        // Explicitly shutdown document server. JVoiceXML will not do this for us.
+        DocumentServer documentServer = jvxml.getDocumentServer();
+        if (documentServer != null) {
+            documentServer.stop();
+        }
+
+        // Shutdown interpreter
+        jvxml.shutdown();
+        jvxml.waitShutdownComplete();
+    }
+
+    private void endCall() {
+        if (call != null) {
+            call.shutdown();
+        }
     }
 }

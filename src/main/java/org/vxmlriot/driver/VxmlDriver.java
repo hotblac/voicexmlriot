@@ -51,4 +51,9 @@ public interface VxmlDriver {
      */
     List<String> getAudioSrc();
 
+    /**
+     * Cleanly shutdown the driver and stop / deallocate resources.
+     */
+    void shutdown();
+
 }

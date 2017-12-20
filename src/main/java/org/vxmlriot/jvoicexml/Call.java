@@ -8,6 +8,8 @@ import org.jvoicexml.client.text.TextServer;
 
 import java.net.URI;
 
+import static java.lang.Thread.sleep;
+
 /**
  * A call session
  */
@@ -47,6 +49,14 @@ public class Call {
 
     public void shutdown() {
         textServer.stopServer();
+
+        // Kludge! The TextServer port remains in use after shutdown.
+        // Wait for it to clear
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+            LOGGER.warn("Interrupted while waiting for TextServer socket to clear", e);
+        }
     }
 
     class SessionEndListener implements SessionListener {

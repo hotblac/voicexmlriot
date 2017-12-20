@@ -3,9 +3,12 @@ package org.vxmlriot.jvoicexml;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvoicexml.DocumentServer;
+import org.jvoicexml.JVoiceXmlMain;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
@@ -18,7 +21,8 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for the JVoiceXML implementation of VxmlDriver
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(JVoiceXmlMain.class)
 public class JVoiceXmlDriverTest {
 
     private static final String START = "http://example.com/START.vxml";
@@ -27,12 +31,16 @@ public class JVoiceXmlDriverTest {
     @Mock private Call call;
     @Mock private UriBuilder uriBuilder;
     @Mock private CallBuilder callBuilder;
+    @Mock private JVoiceXmlMain jvxml;
+    @Mock private DocumentServer documentServer;
     @InjectMocks private JVoiceXmlDriver driver;
 
     @Before
     public void setUp() throws Exception {
         when(uriBuilder.build(START)).thenReturn(START_URI);
         when(callBuilder.build()).thenReturn(call);
+        when(callBuilder.getJvxmlMain()).thenReturn(jvxml);
+        when(jvxml.getDocumentServer()).thenReturn(documentServer);
     }
 
     @Test
@@ -62,8 +70,30 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
-    public void hangup_clearsDownCall() {
-        driver.hangup();
+    public void shutdown_clearsDownCall() {
+        driver.shutdown();
         verify(call).shutdown();
+    }
+
+    @Test
+    public void shutdown_stopsJvxmlInterpreter() {
+        driver.shutdown();
+        verify(jvxml).shutdown();
+    }
+
+    @Test
+    public void shutdown_waitsForJvxmlShutdown() {
+        driver.shutdown();
+        verify(jvxml).waitShutdownComplete();
+    }
+
+    /**
+     * Document storage is not automatically stopped on interpreter shutdown.
+     * Ensure this happens explicitly.
+     */
+    @Test
+    public void shutdown_stopsDocumentServer() {
+        driver.shutdown();
+        verify(documentServer).stop();
     }
 }

@@ -32,15 +32,15 @@ public class JVoiceXmlDriverBuilder {
     }
 
     public JVoiceXmlDriver build() {
-        JVoiceXmlDriver driver = new JVoiceXmlDriver();
 
         final JVoiceXmlMain jvxmlMain = startJvxmlInterpreter();
 
         final CallBuilder callBuilder = new CallBuilder();
         callBuilder.setJvxmlMain(jvxmlMain);
-        driver.callBuilder = callBuilder;
 
-        driver.uriBuilder = uriBuilder;
+        JVoiceXmlDriver driver = new JVoiceXmlDriver();
+        driver.setCallBuilder(callBuilder);
+        driver.setUriBuilder(uriBuilder);
         return driver;
     }
 

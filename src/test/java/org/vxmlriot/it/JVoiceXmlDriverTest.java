@@ -1,6 +1,7 @@
 package org.vxmlriot.it;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
@@ -21,8 +22,13 @@ public class JVoiceXmlDriverTest {
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
     @After
-    public void closeCall() throws Exception {
+    public void endCall() throws Exception {
         driver.hangup();
+    }
+
+    @AfterClass
+    public static void stopDriver() throws Exception {
+        driver.shutdown();
     }
 
     @Test
@@ -45,9 +51,13 @@ public class JVoiceXmlDriverTest {
         driver.get("hello.vxml");
         driver.hangup();
         driver.get("hello.vxml");
-        driver.hangup();
+    }
+
+    @Test
+    public void restartDriver_works() throws Exception {
+        driver.shutdown();
+        driver = VxmlDriverFactory.getDriver();
         driver.get("hello.vxml");
-        driver.hangup();
     }
 
     @Ignore("TODO")

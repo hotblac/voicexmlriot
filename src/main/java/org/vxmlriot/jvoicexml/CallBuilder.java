@@ -22,6 +22,10 @@ public class CallBuilder {
         this.jvxmlMain = jvxmlMain;
     }
 
+    JVoiceXmlMain getJvxmlMain() {
+        return jvxmlMain;
+    }
+
     /**
      * Create a new JVoiceXML call
      * @return a valid, built instance of JvoiceXML Call
