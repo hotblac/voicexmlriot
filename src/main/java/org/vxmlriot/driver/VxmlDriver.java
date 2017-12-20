@@ -1,5 +1,6 @@
 package org.vxmlriot.driver;
 
+import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.DriverException;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public interface VxmlDriver {
     /**
      * Get a VXML document by URL
      * @param resource identifying the VXML to be loaded.
+     * @throws CallIsActiveException if the driver already has an active call
      * @throws DriverException on failure of underlying driver
      * @throws IllegalArgumentException on invalid resource
      */

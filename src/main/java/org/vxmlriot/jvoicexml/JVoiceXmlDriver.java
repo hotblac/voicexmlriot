@@ -3,6 +3,7 @@ package org.vxmlriot.jvoicexml;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.vxmlriot.driver.VxmlDriver;
+import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
@@ -33,6 +34,11 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     @Override
     public void get(String resource) throws DriverException {
+
+        if (callIsActive()) {
+            throw new CallIsActiveException("Cannot start a new call - another call is active");
+        }
+
         final URI uri = uriBuilder.build(resource);
         try {
             call = callBuilder.build();
@@ -91,5 +97,10 @@ public class JVoiceXmlDriver implements VxmlDriver {
         if (call != null) {
             call.shutdown();
         }
+        call = null;
+    }
+
+    private boolean callIsActive() {
+        return call != null;
     }
 }

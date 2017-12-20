@@ -1,5 +1,6 @@
 package org.vxmlriot.jvoicexml;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
@@ -18,9 +20,7 @@ import org.vxmlriot.url.UriBuilder;
 import java.net.URI;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for the JVoiceXML implementation of VxmlDriver
@@ -32,7 +32,7 @@ public class JVoiceXmlDriverTest {
     private static final String START = "http://example.com/START.vxml";
     private static final URI START_URI = URI.create(START);
 
-    @Mock private Call call;
+    private Call call;
     @Mock private UriBuilder uriBuilder;
     @Mock private CallBuilder callBuilder;
     @Mock private JVoiceXmlMain jvxml;
@@ -41,10 +41,16 @@ public class JVoiceXmlDriverTest {
 
     @Before
     public void setUp() throws Exception {
+        call = mock(Call.class);
         when(uriBuilder.build(START)).thenReturn(START_URI);
         when(callBuilder.build()).thenReturn(call);
         when(callBuilder.getJvxmlMain()).thenReturn(jvxml);
         when(jvxml.getDocumentServer()).thenReturn(documentServer);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        driver.hangup();
     }
 
     @Test
@@ -80,8 +86,15 @@ public class JVoiceXmlDriverTest {
         driver.get(START);
     }
 
+    @Test(expected = CallIsActiveException.class)
+    public void getWhileAnotherCallIsActive_throwsException() throws Exception {
+        driver.get(START);
+        driver.get(START);
+    }
+
     @Test
-    public void shutdown_clearsDownCall() {
+    public void shutdown_clearsDownCall() throws Exception {
+        driver.get(START);
         driver.shutdown();
         verify(call).shutdown();
     }

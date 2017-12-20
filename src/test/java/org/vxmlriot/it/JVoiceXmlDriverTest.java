@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
@@ -57,6 +58,12 @@ public class JVoiceXmlDriverTest {
     public void restartDriver_works() throws Exception {
         driver.shutdown();
         driver = VxmlDriverFactory.getDriver();
+        driver.get("hello.vxml");
+    }
+
+    @Test(expected = CallIsActiveException.class)
+    public void getWhileCallIsActive_throwsException() throws Exception {
+        driver.get("hello.vxml");
         driver.get("hello.vxml");
     }
 
