@@ -11,6 +11,8 @@ import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.listener.TextListenerAdapter;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
@@ -37,6 +39,8 @@ public class Call {
      */
     protected TextServer textServer;
 
+    protected ResponseListener responseListener = new ResponseListener();
+
 
     public Call(Session session, TextServer textServer) {
         this.session = session;
@@ -57,8 +61,14 @@ public class Call {
         }
     }
 
-    public List<SsmlDocument> getLastResponse() {
-        return null;
+    /**
+     * Get the SSML (speech synthesis) response to the last request.
+     * This method will block until all responses are received.
+     * @return List of SsmlDocuments. A single VXML page with multiple
+     *         speec sections will return multiple responses.
+     */
+    public List<SsmlDocument> getSsmlResponse() {
+        return responseListener.getCapturedResponses();
     }
 
     public void shutdown() {
@@ -73,7 +83,7 @@ public class Call {
         }
     }
 
-    private class SessionEndListener implements SessionListener {
+    class SessionEndListener implements SessionListener {
 
         @Override
         public void sessionStarted(Session session) {}
@@ -86,10 +96,20 @@ public class Call {
     }
 
 
-    private class ResponseListener extends TextListenerAdapter {
+    class ResponseListener extends TextListenerAdapter {
+
+        private final List<SsmlDocument> capturedResponses = Collections.synchronizedList(new ArrayList<>());
+
         @Override
         public void outputSsml(SsmlDocument document) {
+            capturedResponses.add(document);
+        }
 
+        List<SsmlDocument> getCapturedResponses() {
+            synchronized (capturedResponses) {
+                // Return a copy of the list to prevent concurrent modification
+                return new ArrayList<>(capturedResponses);
+            }
         }
     }
 }

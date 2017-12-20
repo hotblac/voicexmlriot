@@ -76,8 +76,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
             throw new CallNotActiveException("Cannot get text response - no call is active");
         }
 
-        List<SsmlDocument> responseDocuments = call.getLastResponse();
-        // TODO: wait for a response
+        List<SsmlDocument> responseDocuments = call.getSsmlResponse();
         if (isEmpty(responseDocuments)) {
             throw new DriverException("No response received");
         }

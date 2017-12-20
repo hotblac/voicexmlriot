@@ -110,7 +110,7 @@ public class JVoiceXmlDriverTest {
     @Test
     public void getTextResponse_returnsAllResponses() throws Exception {
 
-        when(call.getLastResponse()).thenReturn(Arrays.asList(
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
                 getSsmlDocument("ssmlTextResponse_helloWorld.xml"),
                 getSsmlDocument("ssmlTextResponse_goodbye.xml")
         ));
@@ -127,7 +127,7 @@ public class JVoiceXmlDriverTest {
 
     @Test(expected = DriverException.class)
     public void getTextResponseWhenNoResponseReceived_throwsException() throws Exception {
-        when(call.getLastResponse()).thenReturn(null);
+        when(call.getSsmlResponse()).thenReturn(null);
         driver.get(START);
         driver.getTextResponse();
     }
