@@ -53,8 +53,10 @@ public interface VxmlDriver {
     /**
      * Audio source files played by VXML document.
      * @return list of audio responses of current document
+     * @throws CallNotActiveException if no call is in progress
+     * @throws DriverException on failure of underlying driver
      */
-    List<String> getAudioSrc();
+    List<String> getAudioSrc() throws DriverException;
 
     /**
      * Cleanly shutdown the driver and stop / deallocate resources.

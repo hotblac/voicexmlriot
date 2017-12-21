@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -125,6 +126,65 @@ public class JVoiceXmlDriverTest {
         when(call.getSsmlResponse()).thenReturn(null);
         driver.get(START);
         driver.getTextResponse();
+    }
+
+    /**
+     * Any SSML that can't be parsed to a text response should be ignored.
+     * Remaining valid SSML responses should still be interpreted.
+     */
+    @Test
+    public void getTextResponseWhenSsmlIsInvalid_ignoresInvalidResponses() throws Exception {
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
+                ssmlDocument().withFilename("ssmlInvalid.xml").build(),
+                ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build()
+        ));
+
+        driver.get(START);
+        List<String> audioSrc = driver.getTextResponse();
+        assertThat(audioSrc, contains("Hello World!"));
+    }
+
+    @Test
+    public void getAudioSrc_returnsAllAudioFilenames() throws Exception {
+
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
+                ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build(),
+                ssmlDocument().withFilename("ssmlAudioResponse_disclaimerMessage.xml").build()
+        ));
+
+        driver.get(START);
+        List<String> audioSrc = driver.getAudioSrc();
+        assertThat(audioSrc, contains(
+                endsWith("welcomeMessage.wav"),
+                endsWith("disclaimerMessage.wav")));
+    }
+
+    @Test(expected = CallNotActiveException.class)
+    public void getAudioSrcWhenNoCallActive_throwsException() throws Exception {
+        driver.getAudioSrc();
+    }
+
+    @Test(expected = DriverException.class)
+    public void getAudioSrcWhenNoResponseReceived_throwsException() throws Exception {
+        driver.get(START);
+        driver.getAudioSrc();
+    }
+
+    /**
+     * Any SSML that can't be parsed to a text response should be ignored.
+     * Remaining valid SSML responses should still be interpreted.
+     */
+    public void getAudioSrcWhenSsmlIsInvalid_throwsExcpetion() throws Exception {
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
+                ssmlDocument().withFilename("ssmlInvalid.xml").build(),
+                ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build()
+        ));
+
+        driver.get(START);
+        List<String> audioSrc = driver.getAudioSrc();
+        assertThat(audioSrc, contains(
+                endsWith("welcomeMessage.wav")
+        ));
     }
 
     @Test

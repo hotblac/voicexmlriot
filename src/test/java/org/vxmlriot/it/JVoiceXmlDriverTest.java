@@ -10,9 +10,10 @@ import org.vxmlriot.driver.VxmlDriverFactory;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 
 /**
  * Integration test of the JvoiceXml driver implementation
@@ -74,5 +75,16 @@ public class JVoiceXmlDriverTest {
                 "Hello World!",
                 "Goodbye!"
         ));
+    }
+
+    @Test
+    public void getAudioSrc_returnsAllAudioFilenames() throws Exception {
+        driver.get("audio.vxml");
+        List<String> audioSrc = driver.getAudioSrc();
+        assertThat(audioSrc, contains(
+                endsWith("audio-in-block.wav"),
+                endsWith("audio-in-prompt.wav")
+        ));
+
     }
 }
