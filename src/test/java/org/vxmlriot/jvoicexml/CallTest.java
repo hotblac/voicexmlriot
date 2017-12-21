@@ -14,12 +14,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TextServer.class)
@@ -64,8 +60,8 @@ public class CallTest {
         call.call(VXML_URI);
 
         final List<SsmlDocument> ssmlDocumentResponses = Arrays.asList(
-                getSsmlDocument("ssmlTextResponse_helloWorld.xml"),
-                getSsmlDocument("ssmlTextResponse_goodbye.xml")
+                ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build(),
+                ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build()
         );
         when(responseListener.getCapturedResponses()).thenReturn(ssmlDocumentResponses);
 
@@ -79,9 +75,4 @@ public class CallTest {
         verify(textServer).stopServer();
     }
 
-    private SsmlDocument getSsmlDocument(String filename) throws ParserConfigurationException, SAXException, IOException {
-        final InputStream vxmlInput = getClass().getClassLoader().getResourceAsStream(filename);
-        final InputSource vxmlSource = new InputSource(vxmlInput);
-        return new SsmlDocument(vxmlSource);
-    }
 }

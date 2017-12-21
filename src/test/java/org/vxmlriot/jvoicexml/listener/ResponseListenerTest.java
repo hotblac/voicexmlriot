@@ -2,18 +2,14 @@ package org.vxmlriot.jvoicexml.listener;
 
 import org.junit.Test;
 import org.jvoicexml.xml.ssml.SsmlDocument;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertFalse;
+import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
 
 
 public class ResponseListenerTest {
@@ -21,8 +17,8 @@ public class ResponseListenerTest {
     @Test
     public void getCapturedResponses_returnsAllResponses() throws Exception {
 
-        SsmlDocument response1 = getSsmlDocument("ssmlTextResponse_helloWorld.xml");
-        SsmlDocument response2 = getSsmlDocument("ssmlTextResponse_goodbye.xml");
+        SsmlDocument response1 = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
+        SsmlDocument response2 = ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build();
 
         ResponseListener listener = new ResponseListener();
         listener.outputSsml(response1);
@@ -37,8 +33,8 @@ public class ResponseListenerTest {
 
         final ResponseListener listener = new ResponseListener();
 
-        final SsmlDocument response1 = getSsmlDocument("ssmlTextResponse_helloWorld.xml");
-        final SsmlDocument response2 = getSsmlDocument("ssmlTextResponse_goodbye.xml");
+        final SsmlDocument response1 = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
+        final SsmlDocument response2 = ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build();
         final List<SsmlDocument> responses = new ArrayList<>();
 
         Thread mainThread = new Thread(() -> {
@@ -60,12 +56,6 @@ public class ResponseListenerTest {
         assertFalse("Main thread hung without receiving responses", mainThread.isAlive());
 
         assertThat(responses, contains(response1, response2));
-    }
-
-    private SsmlDocument getSsmlDocument(String filename) throws ParserConfigurationException, SAXException, IOException {
-        final InputStream vxmlInput = getClass().getClassLoader().getResourceAsStream(filename);
-        final InputSource vxmlSource = new InputSource(vxmlInput);
-        return new SsmlDocument(vxmlSource);
     }
 
 }

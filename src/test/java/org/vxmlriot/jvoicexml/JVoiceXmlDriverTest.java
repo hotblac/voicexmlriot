@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.event.error.BadFetchError;
-import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -18,12 +17,7 @@ import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
 import org.vxmlriot.url.UriBuilder;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +29,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
 
 
 /**
@@ -111,8 +106,8 @@ public class JVoiceXmlDriverTest {
     public void getTextResponse_returnsAllResponses() throws Exception {
 
         when(call.getSsmlResponse()).thenReturn(Arrays.asList(
-                getSsmlDocument("ssmlTextResponse_helloWorld.xml"),
-                getSsmlDocument("ssmlTextResponse_goodbye.xml")
+                ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build(),
+                ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build()
         ));
 
         driver.get(START);
@@ -161,9 +156,4 @@ public class JVoiceXmlDriverTest {
         verify(documentServer).stop();
     }
 
-    private SsmlDocument getSsmlDocument(String filename) throws ParserConfigurationException, SAXException, IOException {
-        final InputStream vxmlInput = getClass().getClassLoader().getResourceAsStream(filename);
-        final InputSource vxmlSource = new InputSource(vxmlInput);
-        return new SsmlDocument(vxmlSource);
-    }
 }
