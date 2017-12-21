@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.JVoiceXmlMainListener;
+import org.vxmlriot.parser.AudioSrcResponseParser;
+import org.vxmlriot.parser.TextResponseParser;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
@@ -41,6 +43,8 @@ public class JVoiceXmlDriverBuilder {
         JVoiceXmlDriver driver = new JVoiceXmlDriver();
         driver.setCallBuilder(callBuilder);
         driver.setUriBuilder(uriBuilder);
+        driver.setTextResponseParser(new TextResponseParser());
+        driver.setAudioSrcParser(new AudioSrcResponseParser());
         return driver;
     }
 

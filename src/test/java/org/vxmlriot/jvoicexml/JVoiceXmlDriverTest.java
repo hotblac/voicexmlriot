@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.event.error.BadFetchError;
+import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -16,15 +17,16 @@ import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
+import org.vxmlriot.parser.SsmlDocumentParser;
 import org.vxmlriot.url.UriBuilder;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -46,6 +48,8 @@ public class JVoiceXmlDriverTest {
     private Call call;
     @Mock private UriBuilder uriBuilder;
     @Mock private CallBuilder callBuilder;
+    @Mock(name = "textResponseParser") private SsmlDocumentParser textResponseParser;
+    @Mock(name = "audioSrcParser") private SsmlDocumentParser audioSrcParser;
     @Mock private JVoiceXmlMain jvxml;
     @Mock private DocumentServer documentServer;
     @InjectMocks private JVoiceXmlDriver driver;
@@ -106,10 +110,11 @@ public class JVoiceXmlDriverTest {
     @Test
     public void getTextResponse_returnsAllResponses() throws Exception {
 
-        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
-                ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build(),
-                ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build()
-        ));
+        SsmlDocument ssmlHelloWorld = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
+        SsmlDocument ssmlGoodbye = ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build();
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(ssmlHelloWorld, ssmlGoodbye));
+        when(textResponseParser.parse(ssmlHelloWorld)).thenReturn(Optional.of("Hello World!"));
+        when(textResponseParser.parse(ssmlGoodbye)).thenReturn(Optional.of("Goodbye!"));
 
         driver.get(START);
         List<String> response = driver.getTextResponse();
@@ -134,10 +139,11 @@ public class JVoiceXmlDriverTest {
      */
     @Test
     public void getTextResponseWhenSsmlIsInvalid_ignoresInvalidResponses() throws Exception {
-        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
-                ssmlDocument().withFilename("ssmlInvalid.xml").build(),
-                ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build()
-        ));
+        SsmlDocument ssmlInvalid = ssmlDocument().withFilename("ssmlInvalidResponse.xml").build();
+        SsmlDocument ssmlHelloWorld = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(ssmlInvalid, ssmlHelloWorld));
+        when(textResponseParser.parse(ssmlInvalid)).thenReturn(Optional.empty());
+        when(textResponseParser.parse(ssmlHelloWorld)).thenReturn(Optional.of("Hello World!"));
 
         driver.get(START);
         List<String> audioSrc = driver.getTextResponse();
@@ -147,16 +153,15 @@ public class JVoiceXmlDriverTest {
     @Test
     public void getAudioSrc_returnsAllAudioFilenames() throws Exception {
 
-        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
-                ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build(),
-                ssmlDocument().withFilename("ssmlAudioResponse_disclaimerMessage.xml").build()
-        ));
+        SsmlDocument ssmlWelcome = ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build();
+        SsmlDocument ssmlDisclaimer = ssmlDocument().withFilename("ssmlAudioResponse_disclaimerMessage.xml").build();
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(ssmlWelcome, ssmlDisclaimer));
+        when(audioSrcParser.parse(ssmlWelcome)).thenReturn(Optional.of("welcomeMessage.wav"));
+        when(audioSrcParser.parse(ssmlDisclaimer)).thenReturn(Optional.of("disclaimerMessage.wav"));
 
         driver.get(START);
         List<String> audioSrc = driver.getAudioSrc();
-        assertThat(audioSrc, contains(
-                endsWith("welcomeMessage.wav"),
-                endsWith("disclaimerMessage.wav")));
+        assertThat(audioSrc, contains("welcomeMessage.wav", "disclaimerMessage.wav"));
     }
 
     @Test(expected = CallNotActiveException.class)
@@ -174,17 +179,16 @@ public class JVoiceXmlDriverTest {
      * Any SSML that can't be parsed to a text response should be ignored.
      * Remaining valid SSML responses should still be interpreted.
      */
-    public void getAudioSrcWhenSsmlIsInvalid_throwsExcpetion() throws Exception {
-        when(call.getSsmlResponse()).thenReturn(Arrays.asList(
-                ssmlDocument().withFilename("ssmlInvalid.xml").build(),
-                ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build()
-        ));
+    public void getAudioSrcWhenSsmlIsInvalid_ignoresInvalidResponses() throws Exception {
+        SsmlDocument ssmlInvalid = ssmlDocument().withFilename("ssmlInvalidResponse.xml").build();
+        SsmlDocument ssmlWelcome = ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build();
+        when(call.getSsmlResponse()).thenReturn(Arrays.asList(ssmlInvalid, ssmlWelcome));
+        when(audioSrcParser.parse(ssmlInvalid)).thenReturn(Optional.empty());
+        when(audioSrcParser.parse(ssmlWelcome)).thenReturn(Optional.of("welcomeMessage.wav"));
 
         driver.get(START);
         List<String> audioSrc = driver.getAudioSrc();
-        assertThat(audioSrc, contains(
-                endsWith("welcomeMessage.wav")
-        ));
+        assertThat(audioSrc, contains("welcomeMessage.wav"));
     }
 
     @Test

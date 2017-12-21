@@ -1,10 +1,7 @@
 package org.vxmlriot.jvoicexml;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
-import org.jvoicexml.xml.ssml.Speak;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.exception.CallIsActiveException;
@@ -12,14 +9,12 @@ import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
+import org.vxmlriot.parser.SsmlDocumentParser;
 import org.vxmlriot.url.UriBuilder;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -31,6 +26,8 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     protected UriBuilder uriBuilder;
     protected CallBuilder callBuilder;
+    protected SsmlDocumentParser textResponseParser;
+    protected SsmlDocumentParser audioSrcParser;
     private Call call;
 
     public JVoiceXmlDriver() {
@@ -42,6 +39,14 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     public void setCallBuilder(CallBuilder callBuilder) {
         this.callBuilder = callBuilder;
+    }
+
+    public void setTextResponseParser(SsmlDocumentParser textResponseParser) {
+        this.textResponseParser = textResponseParser;
+    }
+
+    public void setAudioSrcParser(SsmlDocumentParser audioSrcParser) {
+        this.audioSrcParser = audioSrcParser;
     }
 
     @Override
@@ -87,7 +92,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
         if (isEmpty(responseDocuments)) {
             throw new DriverException("No response received");
         }
-        return parseTextResponses(responseDocuments);
+        return parseDocuments(responseDocuments, textResponseParser);
     }
 
     @Override
@@ -100,7 +105,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
         if (isEmpty(responseDocuments)) {
             throw new DriverException("No response received");
         }
-        return parseAudioResponses(responseDocuments);
+        return parseDocuments(responseDocuments, audioSrcParser);
     }
 
     @Override
@@ -132,42 +137,13 @@ public class JVoiceXmlDriver implements VxmlDriver {
         return call != null;
     }
 
-    private List<String> parseTextResponses(List<SsmlDocument> documents) {
-        return documents.stream()
-                .map(this::textContent)
-                .filter(StringUtils::isNotBlank)
+    private List<String> parseDocuments(List<SsmlDocument> responseDocuments,
+                                        SsmlDocumentParser parser) {
+        return responseDocuments.stream()
+                .map(parser::parse)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
-    private List<String> parseAudioResponses(List<SsmlDocument> documents) {
-        return documents.stream()
-                .map(this::audioSrc)
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toList());
-    }
-
-    private String textContent(SsmlDocument document) {
-        try {
-            return document.getSpeak().getTextContent();
-        } catch (Exception e) {
-            // Provided parse methods on SsmlDocument are prone to NPE.
-            // Interpret these as invalid SSML and ignore
-            return null;
-        }
-    }
-
-    private String audioSrc(SsmlDocument document) {
-        try {
-            NamespaceContextImpl ns = new NamespaceContextImpl();
-            ns.startPrefixMapping("ssml", Speak.DEFAULT_XMLNS);
-
-            final XPathFactory xpathFactory = XPathFactory.newInstance();
-            final XPath xpath = xpathFactory.newXPath();
-            xpath.setNamespaceContext(ns);
-
-            return (String) xpath.evaluate("/ssml:speak/ssml:audio/@src", document.getDocument(), XPathConstants.STRING);
-        } catch (XPathExpressionException e) {
-            throw new IllegalArgumentException("Failed to parse SsmlDocument", e);
-        }
-    }
 }
