@@ -8,6 +8,8 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
 
@@ -58,4 +60,13 @@ public class ResponseListenerTest {
         assertThat(responses, contains(response1, response2));
     }
 
+    @Test
+    public void clear_resetsState() throws Exception {
+        ResponseListener listener = new ResponseListener();
+        listener.outputSsml(ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build());
+        assertThat(listener.getCapturedResponses(), not(empty()));
+
+        listener.clear();
+        assertThat(listener.getCapturedResponses(), empty());
+    }
 }

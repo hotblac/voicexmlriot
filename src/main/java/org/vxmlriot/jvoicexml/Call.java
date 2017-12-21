@@ -37,14 +37,17 @@ public class Call {
      */
     protected TextServer textServer;
 
-    protected ResponseListener responseListener = new ResponseListener();
+    protected ResponseListener responseListener;
 
 
     public Call(Session session, TextServer textServer) {
         this.session = session;
         this.textServer = textServer;
         session.addSessionListener(new SessionEndListener());
-        this.textServer.addTextListener(responseListener);
+    }
+
+    public void setResponseListener(ResponseListener responseListener) {
+        this.responseListener = responseListener;
     }
 
     /**
@@ -54,6 +57,7 @@ public class Call {
      */
     public void call(URI uri) throws JVoiceXmlErrorEventException {
         try {
+            responseListener.clear();
             session.call(uri);
         } catch (ErrorEvent errorEvent) {
             throw new JVoiceXmlErrorEventException(errorEvent);

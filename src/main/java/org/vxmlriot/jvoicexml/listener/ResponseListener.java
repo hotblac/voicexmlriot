@@ -36,6 +36,15 @@ public class ResponseListener extends TextListenerAdapter {
     }
 
     /**
+     * Clear the listener state.
+     * This should be done before any new responses are expected.
+     */
+    public void clear() {
+        capturedResponses.clear();
+        awaitingMoreResponses = true;
+    }
+
+    /**
      * Return all text response output.
      * This method will block until all responses are received.
      * @return List of SsmlDocuments. A single VXML page with multiple

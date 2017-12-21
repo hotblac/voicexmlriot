@@ -47,6 +47,12 @@ public class CallTest {
         verify(session).call(VXML_URI);
     }
 
+    @Test
+    public void call_resetsResponseState() throws Exception {
+        call.call(VXML_URI);
+        verify(responseListener).clear();
+    }
+
     @Test(expected = JVoiceXmlErrorEventException.class)
     public void callHasError_exceptionIsThrown() throws Exception, ErrorEvent {
         when(session.call(any(URI.class)))
