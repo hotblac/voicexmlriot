@@ -5,9 +5,11 @@ import org.jvoicexml.xml.ssml.SsmlDocument;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.MapUtils.isEmpty;
 
 public class ResponseListener extends TextListenerAdapter {
 
@@ -25,12 +27,27 @@ public class ResponseListener extends TextListenerAdapter {
      */
     private static final long TIME_TO_NEXT_RESPONSE_MS = 500;
 
+    /**
+     * Expect more responses until time since last response has expired
+     */
     private boolean awaitingMoreResponses = true;
-    private final List<SsmlDocument> capturedResponses = Collections.synchronizedList(new ArrayList<>());
+
+    /**
+     * SsmlDocument responses received in insertion order.
+     * Implemented as a Map keyed by the SsmlDocument text (String) so that
+     * duplicates are discarded. If two (non-equal) SsmlDocuments are received
+     * with the same text, count as a duplicate and keep only one.
+     * This is a workaround for JVoiceXML sending duplicate outputSsml
+     * events.
+     * Synchronized as this will be updated by the TextServer thread and read by the
+     * main thread.
+     */
+    private final Map<String, SsmlDocument> capturedResponses =
+            Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Override
     public synchronized void outputSsml(SsmlDocument document) {
-        capturedResponses.add(document);
+        capturedResponses.put(document.toString(), document);
         awaitingMoreResponses = true;
         notify();
     }
@@ -61,7 +78,7 @@ public class ResponseListener extends TextListenerAdapter {
         // Assume no more responses
         synchronized (capturedResponses) {
             // Return a copy of the list to prevent concurrent modification
-            return new ArrayList<>(capturedResponses);
+            return new ArrayList<>(capturedResponses.values());
         }
     }
 

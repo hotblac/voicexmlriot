@@ -2,6 +2,7 @@ package org.vxmlriot.it;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
@@ -13,9 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Integration test of the JvoiceXml driver implementation
@@ -88,6 +87,40 @@ public class JVoiceXmlDriverTest {
                 endsWith("audio-in-block.wav"),
                 endsWith("audio-in-prompt.wav")
         ));
+    }
+
+    @Ignore("TODO: investigate why this causes other tests to fail. Session not closed?")
+    @Test
+    public void dtmfMenu_promptIsPlayed() throws Exception {
+        driver.get("dtmf.vxml");
+        List<String> textResponse = driver.getTextResponse();
+
+        // Specifically check that only 1 prompt is played.
+        // JVoiceXML can send duplicate Ssml events for menus.
+        System.out.println("textResponse: "  + String.join("|X|", textResponse));
+        assertThat(textResponse, hasSize(1));
+        assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
+    }
+
+    @Ignore("TODO: implement DTMF input")
+    @Test
+    public void enterDtmf_selectsMenuOption() throws Exception {
+        driver.get("dtmf.vxml");
+        driver.enterDtmf("1");
+        List<String> textResponse = driver.getTextResponse();
+        assertThat(textResponse, hasSize(1));
+        assertThat(textResponse, contains("You like this example."));
+    }
+
+    @Ignore("TODO: implement DTMF input")
+    @Test
+    public void enterDtmfInvalidOption_triggersReprompt() throws Exception {
+        driver.get("dtmf.vxml");
+        driver.enterDtmf("9");
+        List<String> textResponse = driver.getTextResponse();
+        assertThat(textResponse, hasSize(1));
+        // Reprompt
+        assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
     }
 
     /**
