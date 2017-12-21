@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.vxmlriot.jvoicexml.listener.LoggingTextListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
 import static org.junit.Assert.assertEquals;
@@ -61,7 +62,8 @@ public class CallBuilderTest {
 
     @Test
     public void build_addsTextServerListeners() throws Exception {
-        Call call = builder.build();
+        builder.build();
         verify(textServer).addTextListener(isA(ResponseListener.class));
+        verify(textServer).addTextListener(isA(LoggingTextListener.class));
     }
 }

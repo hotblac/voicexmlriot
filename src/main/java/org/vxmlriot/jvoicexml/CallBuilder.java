@@ -5,6 +5,7 @@ import org.jvoicexml.*;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
 import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
+import org.vxmlriot.jvoicexml.listener.LoggingTextListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
 import java.net.UnknownHostException;
@@ -19,6 +20,7 @@ public class CallBuilder {
 
     protected JVoiceXmlMain jvxmlMain;
     protected ResponseListener responseListener = new ResponseListener();
+    protected LoggingTextListener loggingListener = new LoggingTextListener();
 
     public void setJvxmlMain(JVoiceXmlMain jvxmlMain) {
         this.jvxmlMain = jvxmlMain;
@@ -54,6 +56,7 @@ public class CallBuilder {
     private synchronized TextServer startTextServer() {
         final TextServer textServer = new TextServer(TEXT_SERVER_PORT);
         textServer.addTextListener(responseListener);
+        textServer.addTextListener(loggingListener);
         textServer.start();
         try {
             LOGGER.debug("Waiting for TextServer startup");
