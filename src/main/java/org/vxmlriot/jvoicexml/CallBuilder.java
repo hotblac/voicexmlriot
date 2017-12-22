@@ -2,6 +2,7 @@ package org.vxmlriot.jvoicexml;
 
 import org.apache.log4j.Logger;
 import org.jvoicexml.*;
+import org.jvoicexml.client.text.TextListener;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlStartupException;
@@ -10,6 +11,8 @@ import org.vxmlriot.jvoicexml.listener.LoggingTextListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Build a new call
@@ -20,9 +23,6 @@ public class CallBuilder {
     static final int TEXT_SERVER_PORT = 4242;
 
     private JVoiceXmlMain jvxmlMain;
-    private ResponseListener responseListener = new ResponseListener();
-    private LoggingTextListener loggingListener = new LoggingTextListener();
-    private InputStateListener inputStateListener = new InputStateListener();
 
     public void setJvxmlMain(JVoiceXmlMain jvxmlMain) {
         this.jvxmlMain = jvxmlMain;
@@ -39,7 +39,15 @@ public class CallBuilder {
      */
     public Call build() throws JVoiceXmlStartupException {
 
-        final TextServer textServer = startTextServer();
+        final ResponseListener responseListener = new ResponseListener();
+        final LoggingTextListener loggingListener = new LoggingTextListener();
+        final InputStateListener inputStateListener = new InputStateListener();
+
+        final TextServer textServer = startTextServer(Arrays.asList(
+                responseListener,
+                loggingListener,
+                inputStateListener
+        ));
 
         try {
             final ConnectionInformation info = textServer.getConnectionInformation();
@@ -56,11 +64,9 @@ public class CallBuilder {
         }
     }
 
-    private synchronized TextServer startTextServer() {
+    private synchronized TextServer startTextServer(List<TextListener> listeners) {
         final TextServer textServer = new TextServer(TEXT_SERVER_PORT);
-        textServer.addTextListener(responseListener);
-        textServer.addTextListener(inputStateListener);
-        textServer.addTextListener(loggingListener);
+        listeners.forEach(textServer::addTextListener);
         textServer.start();
         try {
             LOGGER.debug("Waiting for TextServer startup");

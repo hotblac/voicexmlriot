@@ -9,6 +9,7 @@ import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
 import org.jvoicexml.event.error.NoresourceError;
 import org.jvoicexml.event.plain.ConnectionDisconnectHangupEvent;
+import org.jvoicexml.interpreter.JVoiceXmlSession;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlException;
@@ -124,8 +125,11 @@ public class Call {
             try {
                 session.hangup();
                 session.waitSessionEnd();
+                //((JVoiceXmlSession)session).join();
             } catch (ErrorEvent errorEvent) {
                 LOGGER.warn("Error event while waiting for session to end: " + errorEvent.getEventType(), errorEvent);
+            //} catch (InterruptedException e) {
+            //    LOGGER.warn("Interrupted while waiting for session to end");
             }
         }
     }

@@ -2,7 +2,7 @@ package org.vxmlriot.it;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
@@ -23,6 +23,11 @@ public class JVoiceXmlDriverTest {
 
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
+    @BeforeClass
+    public static void preventJvmTermination() {
+        killTerminationThread();
+    }
+
     @After
     public void endCall() {
         driver.hangup();
@@ -31,7 +36,6 @@ public class JVoiceXmlDriverTest {
     @AfterClass
     public static void stopDriver() {
         driver.shutdown();
-        killTerminationThread();
     }
 
     @Test
@@ -101,7 +105,6 @@ public class JVoiceXmlDriverTest {
         assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
     }
 
-    @Ignore("This test still causes other tests to fail - some race condition?")
     @Test
     public void enterDtmf_selectsMenuOption() throws Exception {
         driver.get("dtmf.vxml");
