@@ -89,7 +89,6 @@ public class JVoiceXmlDriverTest {
         ));
     }
 
-    @Ignore("TODO: investigate why this causes other tests to fail. Session not closed?")
     @Test
     public void dtmfMenu_promptIsPlayed() throws Exception {
         driver.get("dtmf.vxml");
@@ -97,7 +96,7 @@ public class JVoiceXmlDriverTest {
 
         // Specifically check that only 1 prompt is played.
         // JVoiceXML can send duplicate Ssml events for menus.
-        System.out.println("textResponse: "  + String.join("|X|", textResponse));
+        System.out.println("textResponse: "  + String.join("|", textResponse));
         assertThat(textResponse, hasSize(1));
         assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
     }

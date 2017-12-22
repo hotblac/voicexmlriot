@@ -81,4 +81,9 @@ public class CallTest {
         verify(textServer).stopServer();
     }
 
+    @Test
+    public void shutdown_endsSession() {
+        call.shutdown();
+        verify(session).hangup();
+    }
 }

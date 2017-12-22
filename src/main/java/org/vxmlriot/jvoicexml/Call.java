@@ -75,6 +75,11 @@ public class Call {
     }
 
     public void shutdown() {
+        shutdownTextServer();
+        shutdownSession();
+    }
+
+    private void shutdownTextServer() {
         textServer.stopServer();
 
         // Kludge! The TextServer port remains in use after shutdown.
@@ -83,6 +88,17 @@ public class Call {
             sleep(500);
         } catch (InterruptedException e) {
             LOGGER.warn("Interrupted while waiting for TextServer socket to clear", e);
+        }
+    }
+
+    private void shutdownSession() {
+        if (!session.hasEnded()) {
+            try {
+                session.hangup();
+                session.waitSessionEnd();
+            } catch (ErrorEvent errorEvent) {
+                LOGGER.warn("Error event while waiting for session to end: " + errorEvent.getEventType(), errorEvent);
+            }
         }
     }
 
