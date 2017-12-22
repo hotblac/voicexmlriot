@@ -3,16 +3,23 @@ package org.vxmlriot.jvoicexml;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvoicexml.DtmfInput;
 import org.jvoicexml.Session;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
+import org.jvoicexml.event.JVoiceXMLEvent;
 import org.jvoicexml.event.error.BadFetchError;
+import org.jvoicexml.event.error.NoresourceError;
+import org.jvoicexml.event.plain.ConnectionDisconnectHangupEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlInvalidStateException;
+import org.vxmlriot.jvoicexml.listener.InputStateListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
 import java.net.URI;
@@ -21,8 +28,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
 
 @RunWith(PowerMockRunner.class)
@@ -34,11 +40,15 @@ public class CallTest {
     @Mock private Session session;
     @Mock private TextServer textServer;
     @Mock private ResponseListener responseListener;
+    @Mock private InputStateListener inputStateListener;
+    @Mock private DtmfInput dtmfInput;
     @InjectMocks private Call call;
 
     @Before
-    public void setUp() {
+    public void setUp() throws JVoiceXMLEvent {
         call.responseListener = responseListener;
+        call.inputState = inputStateListener;
+        when(session.getDtmfInput()).thenReturn(dtmfInput);
     }
 
     @Test
@@ -62,9 +72,6 @@ public class CallTest {
 
     @Test
     public void getSsmlResponse_returnsSsmlDocuments() throws Exception {
-
-        call.call(VXML_URI);
-
         final List<SsmlDocument> ssmlDocumentResponses = Arrays.asList(
                 ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build(),
                 ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build()
@@ -73,6 +80,43 @@ public class CallTest {
 
         List<SsmlDocument> responses = call.getSsmlResponse();
         assertEquals(ssmlDocumentResponses, responses);
+    }
+
+    @Test
+    public void enterDtmf_addsAllDtmfDigitsToSessionInput() throws Exception {
+        call.enterDtmf("123#*");
+        InOrder dtmfInputOrder = inOrder(dtmfInput);
+        dtmfInputOrder.verify(dtmfInput).addDtmf('1');
+        dtmfInputOrder.verify(dtmfInput).addDtmf('2');
+        dtmfInputOrder.verify(dtmfInput).addDtmf('3');
+        dtmfInputOrder.verify(dtmfInput).addDtmf('#');
+        dtmfInputOrder.verify(dtmfInput).addDtmf('*');
+    }
+
+    @Test
+    public void enterDtmf_waitsTillInputExpected() throws Exception {
+        call.enterDtmf("#");
+        InOrder waitThenInput = inOrder(dtmfInput, inputStateListener);
+        waitThenInput.verify(inputStateListener).waitUntilReadyForInput();
+        waitThenInput.verify(dtmfInput).addDtmf('#');
+    }
+
+    @Test
+    public void enterDtmf_resetsResponseState() throws Exception {
+        call.enterDtmf("#");
+        verify(responseListener).clear();
+    }
+
+    @Test(expected = JVoiceXmlInvalidStateException.class)
+    public void enterDtmf_whenCallIsHungUp() throws Exception, JVoiceXMLEvent {
+        when(session.getDtmfInput()).thenThrow(new ConnectionDisconnectHangupEvent());
+        call.enterDtmf("#");
+    }
+
+    @Test(expected = JVoiceXmlErrorEventException.class)
+    public void enterDtmf_whenNoResource() throws Exception, JVoiceXMLEvent{
+        when(session.getDtmfInput()).thenThrow(new NoresourceError());
+        call.enterDtmf("#");
     }
 
     @Test

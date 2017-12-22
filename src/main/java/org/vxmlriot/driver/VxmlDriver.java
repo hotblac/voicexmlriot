@@ -25,8 +25,12 @@ public interface VxmlDriver {
     /**
      * Simulate user entering a string of DTMF digits
      * @param digits to be entered
+     * @throws CallNotActiveException if no call is in progress
+     * @throws DriverException on failure of underlying driver
+     * @throws IllegalArgumentException if digits are not valid DTMF input
+     *              (digits 0-9, # or *)
      */
-    void enterDtmf(String digits);
+    void enterDtmf(String digits) throws DriverException;
 
     /**
      * Simulate user saying a sequence of utterances

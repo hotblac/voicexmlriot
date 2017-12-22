@@ -16,7 +16,8 @@ import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
-import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlStartupException;
 import org.vxmlriot.parser.SsmlDocumentParser;
 import org.vxmlriot.url.UriBuilder;
 
@@ -90,7 +91,7 @@ public class JVoiceXmlDriverTest {
     @Test(expected = DriverException.class)
     public void getStartupFailure_throwsException() throws Exception {
         when(callBuilder.build())
-                .thenThrow(new JvoiceXmlStartupException("Simulated JVoiceXml failure"));
+                .thenThrow(new JVoiceXmlStartupException("Simulated JVoiceXml failure"));
         driver.get(START);
     }
 
@@ -179,6 +180,7 @@ public class JVoiceXmlDriverTest {
      * Any SSML that can't be parsed to a text response should be ignored.
      * Remaining valid SSML responses should still be interpreted.
      */
+    @Test
     public void getAudioSrcWhenSsmlIsInvalid_ignoresInvalidResponses() throws Exception {
         SsmlDocument ssmlInvalid = ssmlDocument().withFilename("ssmlInvalidResponse.xml").build();
         SsmlDocument ssmlWelcome = ssmlDocument().withFilename("ssmlAudioResponse_welcomeMessage.xml").build();
@@ -189,6 +191,35 @@ public class JVoiceXmlDriverTest {
         driver.get(START);
         List<String> audioSrc = driver.getAudioSrc();
         assertThat(audioSrc, contains("welcomeMessage.wav"));
+    }
+
+    @Test
+    public void enterDtmf_sendsDtmfToCall() throws Exception {
+        driver.get(START);
+        driver.enterDtmf("1234");
+        verify(call).enterDtmf("1234");
+    }
+
+    @Test(expected = CallNotActiveException.class)
+    public void enterDtmfWhenNoCallActive_throwsException() throws Exception {
+        driver.enterDtmf("1234");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void enterInvalidDtmfDigit_throwsException() throws Exception {
+        // Expect the driver to throw an exception on invalid DTMF input
+        doThrow(new IllegalArgumentException("Simulated driver error"))
+                .when(call).enterDtmf("!");
+        driver.get(START);
+        driver.enterDtmf("!");
+    }
+
+    @Test(expected = DriverException.class)
+    public void enterDtmfCausesJVoiceXmlException_throwsException() throws Exception {
+        doThrow(new JVoiceXmlException("Simulated driver error"))
+                .when(call).enterDtmf("!");
+        driver.get(START);
+        driver.enterDtmf("!");
     }
 
     @Test

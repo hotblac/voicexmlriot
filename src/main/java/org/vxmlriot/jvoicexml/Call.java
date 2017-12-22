@@ -1,13 +1,19 @@
 package org.vxmlriot.jvoicexml;
 
 import org.apache.log4j.Logger;
+import org.jvoicexml.DtmfInput;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.Session;
 import org.jvoicexml.SessionListener;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
+import org.jvoicexml.event.error.NoresourceError;
+import org.jvoicexml.event.plain.ConnectionDisconnectHangupEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlInvalidStateException;
+import org.vxmlriot.jvoicexml.listener.InputStateListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
 import java.net.URI;
@@ -39,6 +45,8 @@ public class Call {
 
     protected ResponseListener responseListener;
 
+    protected InputStateListener inputState;
+
 
     public Call(Session session, TextServer textServer) {
         this.session = session;
@@ -48,6 +56,10 @@ public class Call {
 
     public void setResponseListener(ResponseListener responseListener) {
         this.responseListener = responseListener;
+    }
+
+    public void setInputStateListener(InputStateListener inputState) {
+        this.inputState = inputState;
     }
 
     /**
@@ -72,6 +84,22 @@ public class Call {
      */
     public List<SsmlDocument> getSsmlResponse() {
         return responseListener.getCapturedResponses();
+    }
+
+    public void enterDtmf(String digits) throws JVoiceXmlException {
+        inputState.waitUntilReadyForInput();
+        responseListener.clear();
+        try {
+            DtmfInput input = session.getDtmfInput();
+            for (char digit : digits.toCharArray()) {
+                LOGGER.debug("Entering digit: " + digit);
+                input.addDtmf(digit);
+            }
+        } catch (NoresourceError noresourceError) {
+            throw new JVoiceXmlErrorEventException(noresourceError);
+        } catch (ConnectionDisconnectHangupEvent connectionDisconnectHangupEvent) {
+            throw new JVoiceXmlInvalidStateException("Cannot enter DTMF: call is disconnected", connectionDisconnectHangupEvent);
+        }
     }
 
     public void shutdown() {

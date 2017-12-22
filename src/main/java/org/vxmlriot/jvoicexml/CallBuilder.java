@@ -4,7 +4,8 @@ import org.apache.log4j.Logger;
 import org.jvoicexml.*;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
-import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlStartupException;
+import org.vxmlriot.jvoicexml.listener.InputStateListener;
 import org.vxmlriot.jvoicexml.listener.LoggingTextListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
@@ -18,9 +19,10 @@ public class CallBuilder {
     private static final Logger LOGGER = Logger.getLogger(CallBuilder.class);
     static final int TEXT_SERVER_PORT = 4242;
 
-    protected JVoiceXmlMain jvxmlMain;
-    protected ResponseListener responseListener = new ResponseListener();
-    protected LoggingTextListener loggingListener = new LoggingTextListener();
+    private JVoiceXmlMain jvxmlMain;
+    private ResponseListener responseListener = new ResponseListener();
+    private LoggingTextListener loggingListener = new LoggingTextListener();
+    private InputStateListener inputStateListener = new InputStateListener();
 
     public void setJvxmlMain(JVoiceXmlMain jvxmlMain) {
         this.jvxmlMain = jvxmlMain;
@@ -33,9 +35,9 @@ public class CallBuilder {
     /**
      * Create a new JVoiceXML call
      * @return a valid, built instance of JvoiceXML Call
-     * @throws JvoiceXmlStartupException on failure to start the call session
+     * @throws JVoiceXmlStartupException on failure to start the call session
      */
-    public Call build() throws JvoiceXmlStartupException {
+    public Call build() throws JVoiceXmlStartupException {
 
         final TextServer textServer = startTextServer();
 
@@ -45,17 +47,19 @@ public class CallBuilder {
 
             final Call call = new Call(session, textServer);
             call.setResponseListener(responseListener);
+            call.setInputStateListener(inputStateListener);
             return call;
         } catch (UnknownHostException e) {
-            throw new JvoiceXmlStartupException("Error connecting to TextServer", e);
+            throw new JVoiceXmlStartupException("Error connecting to TextServer", e);
         } catch (ErrorEvent errorEvent) {
-            throw new JvoiceXmlStartupException("Error starting JVoiceXML interpreter", errorEvent);
+            throw new JVoiceXmlStartupException("Error starting JVoiceXML interpreter", errorEvent);
         }
     }
 
     private synchronized TextServer startTextServer() {
         final TextServer textServer = new TextServer(TEXT_SERVER_PORT);
         textServer.addTextListener(responseListener);
+        textServer.addTextListener(inputStateListener);
         textServer.addTextListener(loggingListener);
         textServer.start();
         try {

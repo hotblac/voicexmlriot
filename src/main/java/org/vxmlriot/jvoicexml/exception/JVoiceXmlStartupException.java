@@ -3,12 +3,12 @@ package org.vxmlriot.jvoicexml.exception;
 /**
  * Exception on failure to start JVoiceXML framework or required component
  */
-public class JvoiceXmlStartupException extends JvoiceXmlException {
-    public JvoiceXmlStartupException(String message) {
+public class JVoiceXmlStartupException extends JVoiceXmlException {
+    public JVoiceXmlStartupException(String message) {
         super(message);
     }
 
-    public JvoiceXmlStartupException(String message, Throwable cause) {
+    public JVoiceXmlStartupException(String message, Throwable cause) {
         super(message, cause);
     }
 }

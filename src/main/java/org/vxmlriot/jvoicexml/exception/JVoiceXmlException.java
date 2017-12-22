@@ -3,12 +3,12 @@ package org.vxmlriot.jvoicexml.exception;
 /**
  * Exception on failure of JVoiceXml framework
  */
-public class JvoiceXmlException extends Exception {
-    public JvoiceXmlException(String message) {
+public class JVoiceXmlException extends Exception {
+    public JVoiceXmlException(String message) {
         super(message);
     }
 
-    public JvoiceXmlException(String message, Throwable cause) {
+    public JVoiceXmlException(String message, Throwable cause) {
         super(message, cause);
     }
 }

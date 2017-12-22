@@ -8,7 +8,8 @@ import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
-import org.vxmlriot.jvoicexml.exception.JvoiceXmlStartupException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlException;
+import org.vxmlriot.jvoicexml.exception.JVoiceXmlStartupException;
 import org.vxmlriot.parser.SsmlDocumentParser;
 import org.vxmlriot.url.UriBuilder;
 
@@ -60,7 +61,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
         try {
             call = callBuilder.build();
             call.call(uri);
-        } catch (JvoiceXmlStartupException e) {
+        } catch (JVoiceXmlStartupException e) {
             throw new DriverException("Failed to start JVoiceXML", e);
         } catch(JVoiceXmlErrorEventException e) {
             throw new DriverException("Failed to make the call", e);
@@ -68,8 +69,16 @@ public class JVoiceXmlDriver implements VxmlDriver {
     }
 
     @Override
-    public void enterDtmf(String digits) {
+    public void enterDtmf(String digits) throws DriverException {
+        if (!callIsActive()) {
+            throw new CallNotActiveException("Cannot get text response - no call is active");
+        }
 
+        try {
+            call.enterDtmf(digits);
+        } catch (JVoiceXmlException e) {
+            throw new DriverException("JVoiceXML driver failed on sending DTMF", e);
+        }
     }
 
     @Override

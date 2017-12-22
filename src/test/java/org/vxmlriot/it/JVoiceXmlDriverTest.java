@@ -101,7 +101,7 @@ public class JVoiceXmlDriverTest {
         assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
     }
 
-    @Ignore("TODO: implement DTMF input")
+    @Ignore("This test still causes other tests to fail - some race condition?")
     @Test
     public void enterDtmf_selectsMenuOption() throws Exception {
         driver.get("dtmf.vxml");
@@ -111,7 +111,6 @@ public class JVoiceXmlDriverTest {
         assertThat(textResponse, contains("You like this example."));
     }
 
-    @Ignore("TODO: implement DTMF input")
     @Test
     public void enterDtmfInvalidOption_triggersReprompt() throws Exception {
         driver.get("dtmf.vxml");
