@@ -27,6 +27,21 @@
         </repository>
     </distributionManagement>
 
+    <repositories>
+        <!-- Required for org.mozilla.intl.chardet -->
+        <repository>
+            <id>ebi</id>
+            <name>European Bioinformatics Institute</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
 
         <!-- JVoiceXML -->
