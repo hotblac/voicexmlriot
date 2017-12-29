@@ -1,5 +1,6 @@
 package org.vxmlriot.jvoicexml;
 
+import org.apache.log4j.Logger;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.xml.ssml.SsmlDocument;
@@ -24,6 +25,8 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
  * Drives VXML interactions, implemented by the JVoiceXML library.
  */
 public class JVoiceXmlDriver implements VxmlDriver {
+
+    private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriver.class);
 
     protected UriBuilder uriBuilder;
     protected CallBuilder callBuilder;
@@ -110,7 +113,9 @@ public class JVoiceXmlDriver implements VxmlDriver {
         if (isEmpty(responseDocuments)) {
             throw new DriverException("No response received");
         }
-        return parseDocuments(responseDocuments, textResponseParser);
+        List<String> textResponse = parseDocuments(responseDocuments, textResponseParser);
+        LOGGER.debug("textResponse: " + String.join("|", textResponse));
+        return textResponse;
     }
 
     @Override
@@ -123,7 +128,9 @@ public class JVoiceXmlDriver implements VxmlDriver {
         if (isEmpty(responseDocuments)) {
             throw new DriverException("No response received");
         }
-        return parseDocuments(responseDocuments, audioSrcParser);
+        List<String> audioSrc = parseDocuments(responseDocuments, audioSrcParser);
+        LOGGER.debug("audioSrc:" + String.join("|", audioSrc));
+        return audioSrc;
     }
 
     @Override

@@ -111,7 +111,7 @@ public class JVoiceXmlDriverTest {
 
         // Specifically check that only 1 prompt is played.
         // JVoiceXML can send duplicate Ssml events for menus.
-        System.out.println("textResponse: "  + String.join("|", textResponse));
+        LOGGER.debug("textResponse: "  + String.join("|", textResponse));
         assertThat(textResponse, hasSize(1));
         assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
     }
@@ -139,8 +139,6 @@ public class JVoiceXmlDriverTest {
     public void speechInputMenu_promptIsPlayed() throws Exception {
         driver.get("input.vxml");
         List<String> textResponse = driver.getTextResponse();
-
-        System.out.println("textResponse: "  + String.join("|", textResponse));
         assertThat(textResponse, hasSize(1));
         assertThat(textResponse, contains("Do you like this example?"));
     }
@@ -191,7 +189,7 @@ public class JVoiceXmlDriverTest {
         Thread[] threads = new Thread[1024];
         int numThreads = rootThreadGroup.enumerate(threads);
         if (numThreads > 1024) {
-            System.out.println("WARN: Number of threads exceeds array size.");
+            LOGGER.warn("Number of threads exceeds array size.");
         }
         Thread terminationThread = Arrays.stream(threads)
                 .filter(Objects::nonNull)
@@ -200,7 +198,7 @@ public class JVoiceXmlDriverTest {
                 .orElseThrow(() -> new AssertionError("Failed to find TerminationThread. JVoiceXML may exit JVM before tests complete."));
 
         // Interrupting the shutdown thread is enough to prevent it exiting the JVM
-        System.out.println("Interrupting the TerminationThread to prevent premature JVM exit");
+        LOGGER.info("Interrupting the TerminationThread to prevent premature JVM exit");
         terminationThread.interrupt();
     }
 }
