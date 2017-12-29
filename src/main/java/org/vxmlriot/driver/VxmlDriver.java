@@ -35,8 +35,10 @@ public interface VxmlDriver {
     /**
      * Simulate user saying a sequence of utterances
      * @param utterance spoken by user
+     * @throws CallNotActiveException if no call is in progress
+     * @throws DriverException on failure of underlying driver
      */
-    void say(String... utterance);
+    void say(String... utterance) throws DriverException;
 
     /**
      * End the current call.

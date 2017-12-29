@@ -1,5 +1,6 @@
 package org.vxmlriot.it;
 
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,21 +22,27 @@ import static org.hamcrest.Matchers.*;
  */
 public class JVoiceXmlDriverTest {
 
+    private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverTest.class);
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
-
-    @BeforeClass
-    public static void preventJvmTermination() {
-        killTerminationThread();
-    }
 
     @After
     public void endCall() {
         driver.hangup();
     }
 
+    @BeforeClass
+    public static void cleanupDriver() {
+        try {
+            killTerminationThread();
+        } catch (AssertionError assertionError) {
+            LOGGER.debug("Driver not yet running", assertionError);
+        }
+    }
+
     @AfterClass
     public static void stopDriver() {
         driver.shutdown();
+        killTerminationThread();
     }
 
     @Test
@@ -62,7 +69,11 @@ public class JVoiceXmlDriverTest {
 
     @Test
     public void restartDriver_works() throws Exception {
+
+        // Shutdown driver but do not let it terminate the JVM
         driver.shutdown();
+        killTerminationThread();
+
         driver = VxmlDriverFactory.getDriver();
         driver.get("hello.vxml");
     }
@@ -122,6 +133,43 @@ public class JVoiceXmlDriverTest {
         assertThat(textResponse, hasSize(1));
         // Reprompt
         assertThat(textResponse, contains("Do you like this example? Please enter 1 for yes or 2 for no"));
+    }
+
+    @Test
+    public void speechInputMenu_promptIsPlayed() throws Exception {
+        driver.get("input.vxml");
+        List<String> textResponse = driver.getTextResponse();
+
+        System.out.println("textResponse: "  + String.join("|", textResponse));
+        assertThat(textResponse, hasSize(1));
+        assertThat(textResponse, contains("Do you like this example?"));
+    }
+
+    @Test
+    public void sayYes_selectsMenuOption() throws Exception {
+        driver.get("input.vxml");
+        driver.say("yes");
+        List<String> textResponse = driver.getTextResponse();
+        assertThat(textResponse, hasSize(1));
+        assertThat(textResponse, contains("You like this example."));
+    }
+
+    @Test
+    public void sayNo_selectsMenuOption() throws Exception {
+        driver.get("input.vxml");
+        driver.say("no");
+        List<String> textResponse = driver.getTextResponse();
+        assertThat(textResponse, hasSize(1));
+        assertThat(textResponse, contains("You do not like this example."));
+    }
+
+    @Test
+    public void sayUnrecognized_triggersReprompt() throws Exception {
+        driver.get("input.vxml");
+        driver.say("don't know");
+        List<String> textResponse = driver.getTextResponse();
+        assertThat(textResponse, hasSize(1));
+        assertThat(textResponse, contains("Do you like this example?"));
     }
 
     /**

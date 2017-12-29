@@ -2,14 +2,13 @@ package org.vxmlriot.jvoicexml;
 
 import org.apache.log4j.Logger;
 import org.jvoicexml.DtmfInput;
-import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.Session;
 import org.jvoicexml.SessionListener;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
+import org.jvoicexml.event.JVoiceXMLEvent;
 import org.jvoicexml.event.error.NoresourceError;
 import org.jvoicexml.event.plain.ConnectionDisconnectHangupEvent;
-import org.jvoicexml.interpreter.JVoiceXmlSession;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlErrorEventException;
 import org.vxmlriot.jvoicexml.exception.JVoiceXmlException;
@@ -17,6 +16,7 @@ import org.vxmlriot.jvoicexml.exception.JVoiceXmlInvalidStateException;
 import org.vxmlriot.jvoicexml.listener.InputStateListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -28,11 +28,6 @@ import static java.lang.Thread.sleep;
 public class Call {
 
     private static final Logger LOGGER = Logger.getLogger(Call.class);
-
-    /**
-     * JVoiceXml interpreter
-     */
-    private JVoiceXmlMain jvxml;
 
     /**
      * The active JVoiceXml session.
@@ -100,6 +95,19 @@ public class Call {
             throw new JVoiceXmlErrorEventException(noresourceError);
         } catch (ConnectionDisconnectHangupEvent connectionDisconnectHangupEvent) {
             throw new JVoiceXmlInvalidStateException("Cannot enter DTMF: call is disconnected", connectionDisconnectHangupEvent);
+        }
+    }
+
+    public void sendUtterance(String... utterances) throws JVoiceXmlException {
+        inputState.waitUntilReadyForInput();
+        responseListener.clear();
+        try {
+            for (String utterance : utterances) {
+                LOGGER.debug("Sending utterance: " + utterance);
+                textServer.sendInput(utterance);
+            }
+        } catch (IOException e) {
+            throw new JVoiceXmlInvalidStateException("Cannot input utterance to text server: call may be disconnected", e);
         }
     }
 

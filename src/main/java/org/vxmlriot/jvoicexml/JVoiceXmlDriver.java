@@ -27,8 +27,8 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     protected UriBuilder uriBuilder;
     protected CallBuilder callBuilder;
-    protected SsmlDocumentParser textResponseParser;
-    protected SsmlDocumentParser audioSrcParser;
+    private SsmlDocumentParser textResponseParser;
+    private SsmlDocumentParser audioSrcParser;
     private Call call;
 
     public JVoiceXmlDriver() {
@@ -82,9 +82,18 @@ public class JVoiceXmlDriver implements VxmlDriver {
     }
 
     @Override
-    public void say(String... utterance) {
+    public void say(String... utterance) throws DriverException {
+        if (!callIsActive()) {
+            throw new CallNotActiveException("Cannot get text response - no call is active");
+        }
 
+        try {
+            call.sendUtterance(utterance);
+        } catch (JVoiceXmlException e) {
+            throw new DriverException("JVoiceXML driver failed on sending utterance", e);
+        }
     }
+
 
     @Override
     public void hangup() {

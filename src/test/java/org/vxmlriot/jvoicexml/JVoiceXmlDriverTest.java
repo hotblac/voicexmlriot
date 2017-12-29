@@ -223,6 +223,26 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
+    public void sayUtterance_sendsUtteranceToCall() throws Exception {
+        driver.get(START);
+        driver.say("Hiya");
+        verify(call).sendUtterance("Hiya");
+    }
+
+    @Test(expected = CallNotActiveException.class)
+    public void sayUtteranceWhenNoCallActive_throwsException() throws Exception {
+        driver.say("Hiya");
+    }
+
+    @Test(expected = DriverException.class)
+    public void sayUtteranceCausesJVoiceeXmlException_throwsException() throws Exception {
+        doThrow(new JVoiceXmlException("Simulated driver error"))
+                .when(call).sendUtterance(any(String[].class));
+        driver.get(START);
+        driver.say("Hiya");
+    }
+
+    @Test
     public void shutdown_clearsDownCall() throws Exception {
         driver.get(START);
         driver.shutdown();

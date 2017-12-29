@@ -22,11 +22,13 @@ import org.vxmlriot.jvoicexml.exception.JVoiceXmlInvalidStateException;
 import org.vxmlriot.jvoicexml.listener.InputStateListener;
 import org.vxmlriot.jvoicexml.listener.ResponseListener;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
@@ -108,15 +110,45 @@ public class CallTest {
     }
 
     @Test(expected = JVoiceXmlInvalidStateException.class)
-    public void enterDtmf_whenCallIsHungUp() throws Exception, JVoiceXMLEvent {
+    public void enterDtmfWhenCallIsHungUp_throwsException() throws Exception, JVoiceXMLEvent {
         when(session.getDtmfInput()).thenThrow(new ConnectionDisconnectHangupEvent());
         call.enterDtmf("#");
     }
 
     @Test(expected = JVoiceXmlErrorEventException.class)
-    public void enterDtmf_whenNoResource() throws Exception, JVoiceXMLEvent{
+    public void enterDtmfWhenNoResource_throwsException() throws Exception, JVoiceXMLEvent{
         when(session.getDtmfInput()).thenThrow(new NoresourceError());
         call.enterDtmf("#");
+    }
+
+    @Test
+    public void sayUtterance_sendsAllUtterancesToTextServer() throws Exception {
+        call.sendUtterance("One", "Two", "Three");
+        InOrder utteranceInputOrder = inOrder(textServer);
+        utteranceInputOrder.verify(textServer).sendInput("One");
+        utteranceInputOrder.verify(textServer).sendInput("Two");
+        utteranceInputOrder.verify(textServer).sendInput("Three");
+    }
+
+    @Test
+    public void sayUtterance_waitsTillInputExpected() throws Exception {
+        call.sendUtterance("Hiya");
+        InOrder waitThenInput = inOrder(textServer, inputStateListener);
+        waitThenInput.verify(inputStateListener).waitUntilReadyForInput();
+        waitThenInput.verify(textServer).sendInput("Hiya");
+    }
+
+    @Test
+    public void sayUtterance_resetsResponseState() throws Exception {
+        call.sendUtterance("Hiya");
+        verify(responseListener).clear();
+    }
+
+    @Test(expected = JVoiceXmlInvalidStateException.class)
+    public void sayUtteranceWhenCallIsHungUp_throwsException() throws Exception {
+        doThrow(new IOException("Disconnected. No stream to send (simulated exception)"))
+                .when(textServer).sendInput(anyString());
+        call.sendUtterance("Hiya");
     }
 
     @Test
