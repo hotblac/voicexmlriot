@@ -28,11 +28,12 @@
     </distributionManagement>
 
     <repositories>
-        <!-- Required for org.mozilla.intl.chardet -->
+        <!-- Used for jvoicexml components.
+             As at 0.7.7, they're not published to a standard repo -->
         <repository>
-            <id>ebi</id>
-            <name>European Bioinformatics Institute</name>
-            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
+            <id>disasterarea</id>
+            <name>Disaster Area</name>
+            <url>https://maven.disasterarea.co.uk</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -124,6 +125,7 @@
             <version>1.7R4</version>
         </dependency>
         <dependency>
+            <!-- Located at http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/ -->
             <groupId>org.mozilla.intl</groupId>
             <artifactId>chardet</artifactId>
             <version>1.0</version>
