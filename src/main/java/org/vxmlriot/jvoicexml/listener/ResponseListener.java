@@ -57,6 +57,7 @@ public class ResponseListener extends TextListenerAdapter {
      * This should be done before any new responses are expected.
      */
     public void clear() {
+        LOGGER.debug("clear");
         capturedResponses.clear();
         awaitingMoreResponses = true;
     }
