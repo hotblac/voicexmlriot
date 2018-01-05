@@ -6,7 +6,6 @@ import org.jvoicexml.Session;
 import org.jvoicexml.SessionListener;
 import org.jvoicexml.client.text.TextServer;
 import org.jvoicexml.event.ErrorEvent;
-import org.jvoicexml.event.JVoiceXMLEvent;
 import org.jvoicexml.event.error.NoresourceError;
 import org.jvoicexml.event.plain.ConnectionDisconnectHangupEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
@@ -30,8 +29,18 @@ public class Call {
     private static final Logger LOGGER = Logger.getLogger(Call.class);
 
     /**
+     * Time in milliseconds to wait for TextServer port to clear on shutdown
+     */
+    private static final int PORT_CLEAR_DELAY_MS = 500;
+
+    /**
+     * Time in milliseconds to wait for all Call resources to clear on shutdown
+     */
+    private static final int CALL_CLEAR_DELAY_MS = 500;
+
+    /**
      * The active JVoiceXml session.
-     * */
+     */
     protected Session session;
 
     /**
@@ -114,6 +123,16 @@ public class Call {
     public void shutdown() {
         shutdownTextServer();
         shutdownSession();
+
+        // Kludge!
+        // TextServer / Session resources take time to clear down.
+        // I'm not yet sure what to monitor for shutdown completion.
+        // For now, just delay to reduce likelihood of race conditions.
+        try {
+            sleep(CALL_CLEAR_DELAY_MS);
+        } catch (InterruptedException e) {
+            LOGGER.warn("Interrupted while waiting for Call to shutdown", e);
+        }
     }
 
     private void shutdownTextServer() {
@@ -122,7 +141,7 @@ public class Call {
         // Kludge! The TextServer port remains in use after shutdown.
         // Wait for it to clear
         try {
-            sleep(500);
+            sleep(PORT_CLEAR_DELAY_MS);
         } catch (InterruptedException e) {
             LOGGER.warn("Interrupted while waiting for TextServer socket to clear", e);
         }
@@ -133,11 +152,8 @@ public class Call {
             try {
                 session.hangup();
                 session.waitSessionEnd();
-                //((JVoiceXmlSession)session).join();
             } catch (ErrorEvent errorEvent) {
                 LOGGER.warn("Error event while waiting for session to end: " + errorEvent.getEventType(), errorEvent);
-            //} catch (InterruptedException e) {
-            //    LOGGER.warn("Interrupted while waiting for session to end");
             }
         }
     }
