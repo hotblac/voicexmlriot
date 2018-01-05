@@ -139,7 +139,7 @@ public class JVoiceXmlDriverTest {
     public void speechInputMenu_promptIsPlayed() throws Exception {
         driver.get("input.vxml");
         List<String> textResponse = driver.getTextResponse();
-        assertThat(textResponse, hasSize(1));
+        assertNumberOfResponses(textResponse, 1);
         assertThat(textResponse, contains("Do you like this example?"));
     }
 
@@ -148,7 +148,7 @@ public class JVoiceXmlDriverTest {
         driver.get("input.vxml");
         driver.say("yes");
         List<String> textResponse = driver.getTextResponse();
-        assertThat(textResponse, hasSize(1));
+        assertNumberOfResponses(textResponse, 1);
         assertThat(textResponse, contains("You like this example."));
     }
 
@@ -157,7 +157,7 @@ public class JVoiceXmlDriverTest {
         driver.get("input.vxml");
         driver.say("no");
         List<String> textResponse = driver.getTextResponse();
-        assertThat(textResponse, hasSize(1));
+        assertNumberOfResponses(textResponse, 1);
         assertThat(textResponse, contains("You do not like this example."));
     }
 
@@ -166,8 +166,13 @@ public class JVoiceXmlDriverTest {
         driver.get("input.vxml");
         driver.say("don't know");
         List<String> textResponse = driver.getTextResponse();
-        assertThat(textResponse, hasSize(1));
+        assertNumberOfResponses(textResponse, 1);
         assertThat(textResponse, contains("Do you like this example?"));
+    }
+
+    private void assertNumberOfResponses(List<String> textResponse, int expectedSize) {
+        assertThat("Unexpected response: " + String.join("|", textResponse),
+                textResponse, hasSize(expectedSize));
     }
 
     /**
