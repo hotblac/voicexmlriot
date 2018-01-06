@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -271,4 +272,19 @@ public class JVoiceXmlDriverTest {
         verify(documentServer).stop();
     }
 
+    @Test
+    public void shutdown_preventsJvmExit() {
+        Thread terminationThread = new Thread(() -> {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                System.out.println("Termination thread interrupted");
+            }
+        });
+        terminationThread.setName("TerminationThread");
+        terminationThread.start();
+
+        driver.shutdown();
+        assertTrue(terminationThread.isInterrupted() || !terminationThread.isAlive());
+    }
 }

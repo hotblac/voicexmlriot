@@ -15,7 +15,9 @@ import org.vxmlriot.parser.SsmlDocumentParser;
 import org.vxmlriot.url.UriBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -149,6 +151,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
         // Shutdown interpreter
         jvxml.shutdown();
         jvxml.waitShutdownComplete();
+        preventJvmTermination();
     }
 
     private void endCall() {
@@ -169,6 +172,40 @@ public class JVoiceXmlDriver implements VxmlDriver {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Default behaviour is for TerminationThread to stop the entire JVM
+     * 10s after shutdown request received.
+     * This will break unit tests if they're still running so we need to kill
+     * the thread.
+     */
+    private void preventJvmTermination() {
+
+        // Find the root thread group
+        ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
+        while (threadGroup.getParent() != null) {
+            threadGroup = threadGroup.getParent();
+        }
+
+        // Find the thread named TerminationThread
+        Thread[] threads = new Thread[1024];
+        int numThreads = threadGroup.enumerate(threads);
+        if (numThreads > 1024) {
+            LOGGER.warn("Number of threads exceeds array size.");
+        }
+        Optional<Thread> terminationThread = Arrays.stream(threads)
+                .filter(Objects::nonNull)
+                .filter(t -> t.getName().equals("TerminationThread"))
+                .findAny();
+
+        if (terminationThread.isPresent()) {
+            // Interrupting the shutdown thread is enough to prevent it exiting the JVM
+            LOGGER.info("Interrupting the TerminationThread to prevent premature JVM exit");
+            terminationThread.get().interrupt();
+        } else {
+            LOGGER.warn("TerminationThread not found. JVoiceXML may still attempt to exit JVM.");
+        }
     }
 
 }

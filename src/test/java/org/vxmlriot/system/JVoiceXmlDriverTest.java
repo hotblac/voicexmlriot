@@ -1,18 +1,14 @@
-package org.vxmlriot.it;
+package org.vxmlriot.system;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vxmlriot.exception.CallIsActiveException;
-import org.vxmlriot.jvoicexml.JVoiceXmlDriver;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -30,24 +26,9 @@ public class JVoiceXmlDriverTest {
         driver.hangup();
     }
 
-    @BeforeClass
-    public static void cleanupDriver() {
-        try {
-            killTerminationThread();
-        } catch (AssertionError assertionError) {
-            LOGGER.debug("Driver not yet running", assertionError);
-        }
-    }
-
     @AfterClass
     public static void stopDriver() {
         driver.shutdown();
-        killTerminationThread();
-    }
-
-    @Test
-    public void factory_buildsJvoiceXmlDriver() {
-        assertThat(driver, instanceOf(JVoiceXmlDriver.class));
     }
 
     @Test
@@ -64,17 +45,6 @@ public class JVoiceXmlDriverTest {
     public void getMultipleRequests_works() throws Exception {
         driver.get("hello.vxml");
         driver.hangup();
-        driver.get("hello.vxml");
-    }
-
-    @Test
-    public void restartDriver_works() throws Exception {
-
-        // Shutdown driver but do not let it terminate the JVM
-        driver.shutdown();
-        killTerminationThread();
-
-        driver = VxmlDriverFactory.getDriver();
         driver.get("hello.vxml");
     }
 
@@ -173,37 +143,5 @@ public class JVoiceXmlDriverTest {
     private void assertNumberOfResponses(List<String> textResponse, int expectedSize) {
         assertThat("Unexpected response: " + String.join("|", textResponse),
                 textResponse, hasSize(expectedSize));
-    }
-
-    /**
-     * Default behaviour is for TerminationThread to stop the JVM 10s after
-     * shutdown request received.
-     * This will break unit tests if they're still running so we need to kill
-     * the thread.
-     */
-    private static void killTerminationThread() {
-        ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
-
-        // Find the root thread group
-        ThreadGroup rootThreadGroup = threadGroup;
-        while (rootThreadGroup.getParent() != null) {
-            rootThreadGroup = rootThreadGroup.getParent();
-        }
-
-        // Find the thread named TerminationThread
-        Thread[] threads = new Thread[1024];
-        int numThreads = rootThreadGroup.enumerate(threads);
-        if (numThreads > 1024) {
-            LOGGER.warn("Number of threads exceeds array size.");
-        }
-        Thread terminationThread = Arrays.stream(threads)
-                .filter(Objects::nonNull)
-                .filter(t -> t.getName().equals("TerminationThread"))
-                .findAny()
-                .orElseThrow(() -> new AssertionError("Failed to find TerminationThread. JVoiceXML may exit JVM before tests complete."));
-
-        // Interrupting the shutdown thread is enough to prevent it exiting the JVM
-        LOGGER.info("Interrupting the TerminationThread to prevent premature JVM exit");
-        terminationThread.interrupt();
     }
 }
