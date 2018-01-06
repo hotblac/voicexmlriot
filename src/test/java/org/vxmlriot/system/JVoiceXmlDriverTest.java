@@ -2,7 +2,6 @@ package org.vxmlriot.system;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.driver.VxmlDriver;
@@ -19,15 +18,17 @@ import static org.hamcrest.Matchers.*;
 public class JVoiceXmlDriverTest {
 
     private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverTest.class);
-    private static VxmlDriver driver = VxmlDriverFactory.getDriver();
+    private VxmlDriver driver = VxmlDriverFactory.getDriver();
 
     @After
-    public void endCall() {
+    public void stopDriver() {
         driver.hangup();
-    }
 
-    @AfterClass
-    public static void stopDriver() {
+        /* Ideally we'd reuse the driver instance for all tests in the class.
+         * This causes intermittent test failures as responses for one test
+         * are received by another.
+         * Instead, we shutdown the driver and reinitialize it for every test
+         */
         driver.shutdown();
     }
 

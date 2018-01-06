@@ -19,7 +19,7 @@ public class ResponseListener extends TextListenerAdapter {
      * Time to wait for first response.
      * If we exceed this time with no response, assume no response was sent.
      */
-    private static final long TIME_TO_FIRST_RESPONSE_MS = 2000;
+    private static final long TIME_TO_FIRST_RESPONSE_MS = 3000;
 
     /**
      * Time to wait between responses.
