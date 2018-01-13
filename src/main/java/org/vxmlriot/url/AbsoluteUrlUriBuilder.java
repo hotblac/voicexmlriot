@@ -6,9 +6,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * Builds a HTTP URI from a string
+ * Builds a HTTP / HTTPS URI from a string
  */
-public class HttpUriBuilder implements UriBuilder {
+public class AbsoluteUrlUriBuilder implements UriBuilder {
     @Override
     public URI build(String resource) {
         try {

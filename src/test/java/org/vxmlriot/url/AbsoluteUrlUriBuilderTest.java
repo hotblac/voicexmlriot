@@ -7,12 +7,12 @@ import java.net.URI;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class HttpUriBuilderTest {
+public class AbsoluteUrlUriBuilderTest {
 
     private static final String VALID_URI_STRING = "http://example.com/start.vxml";
     private static final String INVALID_URI_STRING = "start.vxml";
 
-    private HttpUriBuilder builder = new HttpUriBuilder();
+    private AbsoluteUrlUriBuilder builder = new AbsoluteUrlUriBuilder();
 
     @Test
     public void build_returnsUri() {
@@ -22,7 +22,7 @@ public class HttpUriBuilderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void buildInvalid_throwsException() throws Exception {
+    public void buildInvalid_throwsException() {
         builder.build(INVALID_URI_STRING);
     }
 }
