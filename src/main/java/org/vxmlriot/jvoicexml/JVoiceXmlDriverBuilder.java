@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.JVoiceXmlMainListener;
+import org.vxmlriot.driver.VxmlDriverBuilder;
 import org.vxmlriot.parser.AudioSrcResponseParser;
 import org.vxmlriot.parser.TextResponseParser;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
@@ -15,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
  * Build instances of JVoiceXmlDriver.
  * Defaults are provided for dependent objects and can be overridden using the Builder pattern.
  */
-public class JVoiceXmlDriverBuilder {
+public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverBuilder.class);
 

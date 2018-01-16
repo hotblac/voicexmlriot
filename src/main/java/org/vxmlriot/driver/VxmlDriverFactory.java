@@ -8,9 +8,12 @@ import org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder;
  */
 public class VxmlDriverFactory {
 
+    private static final VxmlDriverBuilder DEFAULT_DRIVER_BUILDER = new JVoiceXmlDriverBuilder();
+
+    public static VxmlDriverBuilder driverBuilder = DEFAULT_DRIVER_BUILDER;
+
     public static VxmlDriver getDriver() {
-        // For now, only the JVoiceXML implementation exists. Build it with default config.
-        return new JVoiceXmlDriverBuilder().build();
+        return driverBuilder.build();
     }
 
 }
