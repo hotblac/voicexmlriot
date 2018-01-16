@@ -4,7 +4,8 @@
 
     <groupId>org.voicexmlriot</groupId>
     <artifactId>voicexmlriot</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -41,146 +42,9 @@
         </repository>
     </repositories>
 
-    <dependencies>
-
-        <!-- JVoiceXML -->
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.client</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.client.text</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.interpreter.datamodel.ecmascript</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.implementation.text</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.processor.srgs</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.profile.vxml21</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.xml</artifactId>
-            <version>${jvoicexml.version}</version>
-        </dependency>
-
-        <!-- Dependencies of JVoiceXML must be explicitly included.
-             JVoiceXML 0.7.7.GA has no transitive dependency management -->
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-            <version>1.5.5</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.2.2.v20140723</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>1.7R4</version>
-        </dependency>
-        <dependency>
-            <!-- Located at http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/ -->
-            <groupId>org.mozilla.intl</groupId>
-            <artifactId>chardet</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!-- Direct dependencies of voicexmlriot -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ws.commons/ws-commons-util -->
-        <dependency>
-            <groupId>org.apache.ws.commons</groupId>
-            <artifactId>ws-commons-util</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-
-
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <version>1.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>1.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>1.10.19</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.7.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.7.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>voicexmlriot-driver</module>
+    </modules>
 
     <build>
         <plugins>
