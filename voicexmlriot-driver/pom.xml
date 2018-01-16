@@ -4,6 +4,11 @@
 
     <artifactId>voicexmlriot-driver</artifactId>
     <packaging>jar</packaging>
+    <name>VoiceXMLRiot Driver</name>
+    <description>
+        Main module for VoiceXMLRiot. This driver exposes a simple interface
+        to drive VoiceXML applications.
+    </description>
 
     <parent>
         <groupId>org.voicexmlriot</groupId>
