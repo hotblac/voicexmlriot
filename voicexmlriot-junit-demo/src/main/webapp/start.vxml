@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<vxml xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    version="2.1" xml:lang="en-GB"
-    xsi:schematicLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
-    <form id="say_hello">
+<vxml xmlns="http://www.w3.org/2001/vxml"
+      version="2.1" xml:lang="en" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+    <property name="interdigittimeout" value="1s"/>
+    <menu id="mainmenu">
+        <prompt>This is a demo VoiceXML application.</prompt>
+        <prompt>Do you want to hear more? Press 1 for yes and 2 for no.</prompt>
+        <choice dtmf="1" next="#hear_more"/>
+        <choice dtmf="2" next="#say_goodbye"/>
+    </menu>
+    <form id="hear_more">
         <block>
-            Hello World!
-            <goto next="#say_goodbye" />
+            <prompt>Maybe later</prompt>
         </block>
     </form>
     <form id="say_goodbye">
@@ -14,3 +20,4 @@
         </block>
     </form>
 </vxml>
+

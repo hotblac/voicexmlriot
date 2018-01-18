@@ -1,5 +1,6 @@
 package org.vxmlriot.demo.junit;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vxmlriot.driver.VxmlDriver;
@@ -27,18 +28,50 @@ public class DemoIT {
 
     private static final String APP_ROOT = "http://localhost:9090/voicexmlriot-junit-demo/";
 
+    private static VxmlDriver driver;
+
     @BeforeClass
-    public static void  configureDriver() {
+    public static void startDriver() {
         VxmlDriverFactory.driverBuilder = new JVoiceXmlDriverBuilder()
                 .uriBuilder(new RelativeUrlUriBuilder(APP_ROOT));
+        driver = VxmlDriverFactory.getDriver();
+    }
+
+    @After
+    public void endCall() {
+        driver.hangup();
     }
 
     @Test
-    public void verifyStart() throws Exception {
-        VxmlDriver driver = VxmlDriverFactory.getDriver();
+    public void testGoodbyeFlow() throws Exception {
         driver.get("start.vxml");
         List<String> responses = driver.getTextResponse();
         assertThat(responses, hasSize(2));
-        assertThat(responses, contains("Hello World!", "Goodbye!"));
+        assertThat(responses, contains(
+                "This is a demo VoiceXML application.",
+                "Do you want to hear more? Press 1 for yes and 2 for no."
+        ));
+
+        driver.enterDtmf("2");
+        responses = driver.getTextResponse();
+        assertThat(responses, hasSize(1));
+        assertThat(responses, contains("Goodbye!"));
+    }
+
+
+    @Test
+    public void testHearMoreFlow() throws Exception {
+        driver.get("start.vxml");
+        List<String> responses = driver.getTextResponse();
+        assertThat(responses, hasSize(2));
+        assertThat(responses, contains(
+                "This is a demo VoiceXML application.",
+                "Do you want to hear more? Press 1 for yes and 2 for no."
+        ));
+
+        driver.enterDtmf("1");
+        responses = driver.getTextResponse();
+        assertThat(responses, hasSize(1));
+        assertThat(responses, contains("Maybe later"));
     }
 }
