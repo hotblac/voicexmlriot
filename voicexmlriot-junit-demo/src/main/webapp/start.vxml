@@ -11,7 +11,7 @@
     </menu>
     <form id="hear_more">
         <block>
-            <prompt>Maybe later</prompt>
+            <goto next="voiceMenu.vxml"/>
         </block>
     </form>
     <form id="say_goodbye">

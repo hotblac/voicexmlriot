@@ -70,8 +70,17 @@ public class DemoIT {
         ));
 
         driver.enterDtmf("1");
-        responses = driver.getTextResponse();
+        responses = driver.getAudioSrc();
         assertThat(responses, hasSize(1));
-        assertThat(responses, contains("Maybe later"));
+        assertThat(responses, contains(
+                endsWith("voiceMenu.wav")
+        ));
+
+        driver.say("sure");
+        responses = driver.getAudioSrc();
+        assertThat(responses, hasSize(1));
+        assertThat(responses, contains(
+                endsWith("yes.wav")
+        ));
     }
 }
