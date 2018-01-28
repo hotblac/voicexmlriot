@@ -83,4 +83,17 @@ public class DemoIT {
                 endsWith("yes.wav")
         ));
     }
+
+    @Test
+    public void testGrammarMisrec() throws Exception {
+        driver.get("start.vxml");
+        assertThat(driver.getTextResponse(), hasItem("This is a demo VoiceXML application."));
+
+        driver.enterDtmf("1");
+        assertThat(driver.getAudioSrc(), hasItem(endsWith("voiceMenu.wav")));
+
+        driver.say("um...");
+        assertThat(driver.getAudioSrc(), hasItem(endsWith("nomatch.wav")));
+    }
+
 }
