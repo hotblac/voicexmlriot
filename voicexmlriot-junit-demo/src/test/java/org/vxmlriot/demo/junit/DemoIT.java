@@ -8,8 +8,6 @@ import org.vxmlriot.driver.VxmlDriverFactory;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder;
 import org.vxmlriot.url.RelativeUrlUriBuilder;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -45,43 +43,29 @@ public class DemoIT {
     @Test
     public void testGoodbyeFlow() throws Exception {
         driver.get("start.vxml");
-        List<String> responses = driver.getTextResponse();
-        assertThat(responses, hasSize(2));
-        assertThat(responses, contains(
+        assertThat(driver.getTextResponse(), contains(
                 "This is a demo VoiceXML application.",
                 "Do you want to hear more? Press 1 for yes and 2 for no."
         ));
 
         driver.enterDtmf("2");
-        responses = driver.getTextResponse();
-        assertThat(responses, hasSize(1));
-        assertThat(responses, contains("Goodbye!"));
+        assertThat(driver.getTextResponse(), contains("Goodbye!"));
     }
 
 
     @Test
     public void testHearMoreFlow() throws Exception {
         driver.get("start.vxml");
-        List<String> responses = driver.getTextResponse();
-        assertThat(responses, hasSize(2));
-        assertThat(responses, contains(
+        assertThat(driver.getTextResponse(), contains(
                 "This is a demo VoiceXML application.",
                 "Do you want to hear more? Press 1 for yes and 2 for no."
         ));
 
         driver.enterDtmf("1");
-        responses = driver.getAudioSrc();
-        assertThat(responses, hasSize(1));
-        assertThat(responses, contains(
-                endsWith("voiceMenu.wav")
-        ));
+        assertThat(driver.getAudioSrc(), contains(endsWith("voiceMenu.wav")));
 
         driver.say("sure");
-        responses = driver.getAudioSrc();
-        assertThat(responses, hasSize(1));
-        assertThat(responses, contains(
-                endsWith("yes.wav")
-        ));
+        assertThat(driver.getAudioSrc(), contains(endsWith("yes.wav")));
     }
 
     @Test
