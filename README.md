@@ -13,7 +13,7 @@ A simple Java based VoiceXML application test framework. VoiceXMLRiot can simula
 Using these operations, VoiceXML application call flows can be simulated and responses verified.
 
 ## Usage
-See [JVoiceXmlDriverTest.java](https://github.com/hotblac/voicexmlriot/blob/master/src/test/java/org/vxmlriot/system/JVoiceXmlDriverTest.java) for an example of how to initialize the Driver, drive a simple VoiceXML call flow and make assertions on the responses. This test uses JUnit but VoiceXMLRiot is test framework agnostic.
+See JVoiceXMLRiot JUnit Demo [DemoIT.java](https://github.com/hotblac/voicexmlriot/blob/voicexmlriot-0.2.0/voicexmlriot-junit-demo/src/test/java/org/vxmlriot/demo/junit/DemoIT.java) for an example of how to initialize the Driver, drive a simple VoiceXML call flow and make assertions on the responses. This test uses JUnit but VoiceXMLRiot is test framework agnostic.
 
 ## Design
 VoiceXMLRiot's design is inspired by the [Selenium WebDriver](http://www.seleniumhq.org/projects/webdriver/). Selenium is not itself a test framework. Selenium provides simple commands for fetching HTML web pages and accessing the content of the page. When used with a test framework such as JUnit, it can drive interaction with a web application and make assertions on the correctness of responses.
