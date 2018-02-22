@@ -69,9 +69,11 @@ public class JVoiceXmlDriverTest {
     public void getAudioSrc_returnsAllAudioFilenames() throws Exception {
         driver.get("audio.vxml");
         List<String> audioSrc = driver.getAudioSrc();
+        assertThat(audioSrc, hasSize(3));
         assertThat(audioSrc, contains(
                 endsWith("audio-in-block.wav"),
-                endsWith("audio-in-prompt.wav")
+                endsWith("audio-in-prompt.wav"),
+                endsWith("audio-in-expr.wav")
         ));
     }
 
