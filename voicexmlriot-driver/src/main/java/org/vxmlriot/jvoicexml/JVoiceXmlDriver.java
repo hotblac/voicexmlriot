@@ -58,14 +58,19 @@ public class JVoiceXmlDriver implements VxmlDriver {
     @Override
     public void get(String resource) throws DriverException {
 
+        final URI uri = uriBuilder.build(resource);
+        get(uri);
+    }
+
+    @Override
+    public void get(URI resource) throws DriverException {
         if (callIsActive()) {
             throw new CallIsActiveException("Cannot start a new call - another call is active");
         }
 
-        final URI uri = uriBuilder.build(resource);
         try {
             call = callBuilder.build();
-            call.call(uri);
+            call.call(resource);
         } catch (JVoiceXmlStartupException e) {
             throw new DriverException("Failed to start JVoiceXML", e);
         } catch(JVoiceXmlErrorEventException e) {
