@@ -72,14 +72,20 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
-    public void get_startsNewCall() throws Exception {
+    public void getStringResource_startsNewCall() throws Exception {
         driver.get(START);
         verify(callBuilder).build();
     }
 
     @Test
-    public void get_requestsPageByUri() throws Exception {
+    public void getStringResource_requestsPageByUri() throws Exception {
         driver.get(START);
+        verify(call).call(START_URI);
+    }
+
+    @Test
+    public void getUriResource_requestsPageByUri() throws Exception {
+        driver.get(START_URI);
         verify(call).call(START_URI);
     }
 

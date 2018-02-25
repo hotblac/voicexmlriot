@@ -4,6 +4,7 @@ import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -21,6 +22,15 @@ public interface VxmlDriver {
      * @throws IllegalArgumentException on invalid resource
      */
     void get(String resource) throws DriverException;
+
+    /**
+     * Get a VXML document by URL
+     * @param resource identifying the VXML to be loaded.
+     * @throws CallIsActiveException if the driver already has an active call
+     * @throws DriverException on failure of underlying driver
+     * @throws IllegalArgumentException on invalid resource
+     */
+    void get(URI resource) throws DriverException;
 
     /**
      * Simulate user entering a string of DTMF digits
