@@ -1,6 +1,7 @@
 package org.vxmlriot.demo.junit;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vxmlriot.driver.VxmlDriver;
@@ -34,6 +35,12 @@ public class DemoIT {
                 .uriBuilder(new RelativeUrlUriBuilder(APP_ROOT));
         driver = VxmlDriverFactory.getDriver();
     }
+
+    @AfterClass
+    public static void shutdownDriver() {
+        driver.shutdown();
+    }
+
 
     @After
     public void endCall() {

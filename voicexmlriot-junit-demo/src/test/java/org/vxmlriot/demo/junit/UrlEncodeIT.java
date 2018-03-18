@@ -1,6 +1,7 @@
 package org.vxmlriot.demo.junit;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vxmlriot.driver.VxmlDriver;
@@ -24,6 +25,11 @@ public class UrlEncodeIT {
     public static void startDriver() {
         VxmlDriverFactory.driverBuilder = new JVoiceXmlDriverBuilder();
         driver = VxmlDriverFactory.getDriver();
+    }
+
+    @AfterClass
+    public static void shutdownDriver() {
+        driver.shutdown();
     }
 
     @Test
