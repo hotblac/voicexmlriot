@@ -76,31 +76,35 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.0</version>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.4.8.v20171121</version>
                 <configuration>
-                    <contextFile>${basedir}/src/test/resources/tomcat/context.xml</contextFile>
-                    <port>9090</port>
+                    <httpConnector>
+                        <port>9090</port>
+                    </httpConnector>
+                    <webApp>
+                        <contextPath>/${project.artifactId}</contextPath>
+                    </webApp>
+                    <stopKey>stop</stopKey>
+                    <stopPort>9999</stopPort>
                 </configuration>
                 <executions>
-                    <!-- At pre-integration-test phase, run the war in an embedded Tomcat server. -->
                     <execution>
-                        <id>start-tomcat</id>
+                        <id>start-jetty</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run-war-only</goal>
+                            <goal>start</goal>
                         </goals>
                         <configuration>
-                            <fork>true</fork>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
                         </configuration>
                     </execution>
-                    <!-- At post-integration-test phase, stop the embedded Tomcat server. -->
                     <execution>
-                        <id>stop-tomcat</id>
+                        <id>stop-jetty</id>
                         <phase>post-integration-test</phase>
                         <goals>
-                            <goal>shutdown</goal>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
