@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.jvoicexml.*;
 import org.jvoicexml.documentserver.JVoiceXmlDocumentServer;
 import org.jvoicexml.documentserver.schemestrategy.FileSchemeStrategy;
-import org.jvoicexml.documentserver.schemestrategy.HttpSchemeStrategy;
 import org.jvoicexml.implementation.PlatformFactory;
 import org.jvoicexml.implementation.dtmf.BufferedDtmfInput;
 import org.jvoicexml.implementation.jvxml.JVoiceXmlImplementationPlatformFactory;
@@ -26,6 +25,7 @@ import org.jvoicexml.profile.vxml21.VoiceXml21Profile;
 import org.jvoicexml.profile.vxml21.VoiceXml21TagStrategyFactory;
 import org.jvoicexml.xml.vxml.Form;
 import org.jvoicexml.xml.vxml.Menu;
+import org.vxmlriot.jvoicexml.override.UrlEncodingHttpSchemeStrategy;
 
 /**
  * JVoiceXML configuration for an embedded text-only JVoiceXML implementation
@@ -97,7 +97,7 @@ public class EmbeddedTextConfiguration implements Configuration {
         } else if (baseClass == DocumentServer.class) {
             final JVoiceXmlDocumentServer server =
                     new JVoiceXmlDocumentServer();
-            server.addSchemeStrategy(new HttpSchemeStrategy());
+            server.addSchemeStrategy(new UrlEncodingHttpSchemeStrategy());
             server.addSchemeStrategy(new FileSchemeStrategy());
             return (T) server;
         } else if (baseClass == ImplementationPlatformFactory.class) {
