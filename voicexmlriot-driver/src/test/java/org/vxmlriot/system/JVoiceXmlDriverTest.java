@@ -118,6 +118,7 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
+    @Ignore("Test works in isolation but fails when run as part of suite. See Github issue #8")
     public void sayYes_selectsMenuOption() throws Exception {
         driver.get("input.vxml");
         driver.say("yes");
