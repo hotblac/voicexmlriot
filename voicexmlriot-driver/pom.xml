@@ -36,6 +36,11 @@
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
+            <artifactId>org.jvoicexml.config</artifactId>
+            <version>${jvoicexml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.interpreter.datamodel.ecmascript</artifactId>
             <version>${jvoicexml.version}</version>
         </dependency>
@@ -103,6 +108,17 @@
             <artifactId>chardet</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>4.2.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>4.2.0.RELEASE</version>
+        </dependency>
+
 
         <!-- Direct dependencies of voicexmlriot -->
         <dependency>
@@ -118,6 +134,12 @@
 
 
         <!-- Test -->
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
+            <version>1.17.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

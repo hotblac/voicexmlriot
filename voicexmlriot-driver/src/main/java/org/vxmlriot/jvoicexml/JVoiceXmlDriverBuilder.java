@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.JVoiceXmlMainListener;
+import org.jvoicexml.config.JVoiceXmlConfiguration;
 import org.vxmlriot.driver.VxmlDriverBuilder;
 import org.vxmlriot.parser.AudioSrcResponseParser;
 import org.vxmlriot.parser.TextResponseParser;
@@ -20,12 +21,39 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverBuilder.class);
 
-    private Configuration config = new EmbeddedTextConfiguration();
+    /**
+     * System property used by JVoiceXML to locate the config directory
+     */
+    static final String PROPERTY_CONFIG_DIR = "jvoicexml.config";
+
+    /**
+     * Use internal resources directory as default config directory.
+     * Can be overridden with {@link config(String)}
+     */
+    static final String DEFAULT_CONFIG_DIR = "src/main/resources";
+
+    private Configuration config = null;
+    private String confDir = DEFAULT_CONFIG_DIR;
     private UriBuilder uriBuilder = new ClasspathFileUriBuilder();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
 
+    /**
+     * Configure JVoiceXML from a custom Configuration class
+     * @param config Implementation of Configuration interface
+     * @return this builder for method chaining
+     */
     public JVoiceXmlDriverBuilder config(Configuration config) {
         this.config = config;
+        return this;
+    }
+
+    /**
+     * Configure JVoiceXML from an XML config file.
+     * @param confDir Directory containing jvoicexml.xml confiuration file
+     * @return this builder for method chaining
+     */
+    public JVoiceXmlDriverBuilder config(String confDir) {
+        this.confDir = confDir;
         return this;
     }
 
@@ -35,6 +63,12 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
     }
 
     public JVoiceXmlDriver build() {
+
+        if (config == null) {
+            // Use default JVoiceXML XML based config
+            System.setProperty(PROPERTY_CONFIG_DIR, confDir);
+            config = new JVoiceXmlConfiguration();
+        }
 
         final JVoiceXmlMain jvxmlMain = startJvxmlInterpreter();
 

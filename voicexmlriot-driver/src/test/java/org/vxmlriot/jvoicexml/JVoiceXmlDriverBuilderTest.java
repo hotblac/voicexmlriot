@@ -1,10 +1,13 @@
 package org.vxmlriot.jvoicexml;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ClearSystemProperties;
 import org.junit.runner.RunWith;
 import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
+import org.jvoicexml.config.JVoiceXmlConfiguration;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
@@ -23,6 +26,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
+import static org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder.DEFAULT_CONFIG_DIR;
+import static org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder.PROPERTY_CONFIG_DIR;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
@@ -30,6 +35,9 @@ import static org.powermock.api.mockito.PowerMockito.verifyNew;
         JVoiceXmlMain.class
 })
 public class JVoiceXmlDriverBuilderTest {
+
+    @Rule public final ClearSystemProperties myPropertyIsCleared
+            = new ClearSystemProperties(PROPERTY_CONFIG_DIR);
 
     @Mock private JVoiceXmlMain jvxml;
     @Mock private JVoiceXmlDriverBuilder.JVoiceXmlStartupListener startupListener;
@@ -51,7 +59,7 @@ public class JVoiceXmlDriverBuilderTest {
         JVoiceXmlDriver jvxmlDriver = builder.build();
         assertNotNull(jvxmlDriver.callBuilder);
         assertThat(jvxmlDriver.uriBuilder, instanceOf(ClasspathFileUriBuilder.class));
-        verifyNew(JVoiceXmlMain.class).withArguments(any(EmbeddedTextConfiguration.class));
+        verifyNew(JVoiceXmlMain.class).withArguments(any(JVoiceXmlConfiguration.class));
     }
 
     @Test
@@ -61,7 +69,20 @@ public class JVoiceXmlDriverBuilderTest {
     }
 
     @Test
-    public void buildJVoiceXmlDriverWithAlternativeConfiguration() throws Exception {
+    public void buildJVoiceXmlDriver_setsConfigPathSystemProperty() {
+        builder.build();
+        assertEquals(DEFAULT_CONFIG_DIR, System.getProperty(PROPERTY_CONFIG_DIR));
+    }
+
+    @Test
+    public void buildWithConfigDir_overridesDefault() {
+        final String expectedConfigDir = "/alternativeDir";
+        builder.config(expectedConfigDir).build();
+        assertEquals(expectedConfigDir, System.getProperty(PROPERTY_CONFIG_DIR));
+    }
+
+    @Test
+    public void buildWithConfigClass_usesConfigClass() throws Exception {
         Configuration alternativeConfig = new AlternativeConfiguration();
         builder.config(alternativeConfig).build();
         verifyNew(JVoiceXmlMain.class).withArguments(alternativeConfig);
