@@ -26,6 +26,13 @@ public class EventDelay {
      */
     private long inputDelay = 0;
 
+    /**
+     * Delay between ending call and allowing driver to continue.
+     * This allows time for the VXML browser to dispose of call resources before
+     * we ask it to start a new call.
+     */
+    private long callClearDelay = 0;
+
     public void delayBeforeResponse() {
         try {
             sleep(responseDelay);
@@ -42,11 +49,23 @@ public class EventDelay {
         }
     }
 
+    public void delayAfterCallClear() {
+        try {
+            sleep(callClearDelay);
+        } catch (InterruptedException e) {
+            LOGGER.warn("Thread interrupted while delaying for call clear", e);
+        }
+    }
+
     public void setResponseDelay(long responseDelay) {
         this.responseDelay = responseDelay;
     }
 
     public void setInputDelay(long inputDelay) {
         this.inputDelay = inputDelay;
+    }
+
+    public void setCallClearDelay(long callClearDelay) {
+        this.callClearDelay = callClearDelay;
     }
 }

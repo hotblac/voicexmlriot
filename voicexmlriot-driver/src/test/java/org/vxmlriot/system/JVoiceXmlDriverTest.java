@@ -29,6 +29,7 @@ public class JVoiceXmlDriverTest {
         EventDelay delays = new EventDelay();
         delays.setInputDelay(500);
         delays.setResponseDelay(0);
+        delays.setCallClearDelay(0);
         VxmlDriverFactory.driverBuilder = new JVoiceXmlDriverBuilder().eventDelays(delays);
         driver = VxmlDriverFactory.getDriver();
     }

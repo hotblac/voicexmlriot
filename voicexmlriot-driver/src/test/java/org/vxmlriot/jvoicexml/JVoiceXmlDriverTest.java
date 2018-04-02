@@ -305,6 +305,16 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
+    public void shutdown_delaysForCallToClear() throws Exception {
+        driver.get(START);
+        driver.shutdown();
+
+        InOrder eventOrder = inOrder(call, delays);
+        eventOrder.verify(call).shutdown();
+        eventOrder.verify(delays).delayAfterCallClear();
+    }
+
+    @Test
     public void shutdown_stopsJvxmlInterpreter() {
         driver.shutdown();
         verify(jvxml).shutdown();

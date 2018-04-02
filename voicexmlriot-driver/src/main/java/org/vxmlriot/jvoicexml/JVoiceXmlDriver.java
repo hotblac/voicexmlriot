@@ -166,6 +166,8 @@ public class JVoiceXmlDriver implements VxmlDriver {
         jvxml.shutdown();
         jvxml.waitShutdownComplete();
         preventJvmTermination();
+
+        delays.delayAfterCallClear();
     }
 
     private void endCall() {
