@@ -5,6 +5,7 @@ import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.JVoiceXmlMainListener;
 import org.jvoicexml.config.JVoiceXmlConfiguration;
+import org.vxmlriot.driver.EventDelay;
 import org.vxmlriot.driver.VxmlDriverBuilder;
 import org.vxmlriot.parser.AudioSrcResponseParser;
 import org.vxmlriot.parser.TextResponseParser;
@@ -31,6 +32,7 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
     private String confDir = null;
     private UriBuilder uriBuilder = new ClasspathFileUriBuilder();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
+    private EventDelay delays = new EventDelay();
 
     /**
      * Configure JVoiceXML from a custom Configuration class
@@ -57,6 +59,11 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
         return this;
     }
 
+    public JVoiceXmlDriverBuilder eventDelays(EventDelay delays) {
+        this.delays = delays;
+        return this;
+    }
+
     public JVoiceXmlDriver build() {
 
         if (config == null) {
@@ -80,6 +87,7 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
         driver.setUriBuilder(uriBuilder);
         driver.setTextResponseParser(new TextResponseParser());
         driver.setAudioSrcParser(new AudioSrcResponseParser());
+        driver.setDelays(delays);
         return driver;
     }
 

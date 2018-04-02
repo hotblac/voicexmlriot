@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.vxmlriot.driver.EventDelay;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
@@ -59,6 +60,7 @@ public class JVoiceXmlDriverBuilderTest {
     public void buildJVoiceXmlDriver_hasDefaultDependencies() throws Exception {
         JVoiceXmlDriver jvxmlDriver = builder.build();
         assertNotNull(jvxmlDriver.callBuilder);
+        assertNotNull(jvxmlDriver.delays);
         assertThat(jvxmlDriver.uriBuilder, instanceOf(ClasspathFileUriBuilder.class));
         verifyNew(JVoiceXmlMain.class).withArguments(any(JVoiceXmlConfiguration.class));
     }
@@ -91,6 +93,13 @@ public class JVoiceXmlDriverBuilderTest {
         Configuration alternativeConfig = new AlternativeConfiguration();
         builder.config(alternativeConfig).build();
         verifyNew(JVoiceXmlMain.class).withArguments(alternativeConfig);
+    }
+
+    @Test
+    public void buildWithCustomDelays_usesCustomDelays() {
+        final EventDelay delays = new EventDelay();
+        JVoiceXmlDriver driver = builder.eventDelays(delays).build();
+        assertEquals(delays, driver.delays);
     }
 
     @Test
