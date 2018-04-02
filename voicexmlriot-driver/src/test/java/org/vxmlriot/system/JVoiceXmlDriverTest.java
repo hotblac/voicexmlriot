@@ -2,7 +2,7 @@ package org.vxmlriot.system;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.driver.VxmlDriver;
@@ -19,17 +19,15 @@ import static org.hamcrest.Matchers.*;
 public class JVoiceXmlDriverTest {
 
     private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverTest.class);
-    private VxmlDriver driver = VxmlDriverFactory.getDriver();
+    private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
     @After
-    public void stopDriver() {
+    public void endCall() {
         driver.hangup();
+    }
 
-        /* Ideally we'd reuse the driver instance for all tests in the class.
-         * This causes intermittent test failures as responses for one test
-         * are received by another.
-         * Instead, we shutdown the driver and reinitialize it for every test
-         */
+    @AfterClass
+    public static void shutdownDriver() {
         driver.shutdown();
     }
 
@@ -118,7 +116,6 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
-    @Ignore("Test works in isolation but fails when run as part of suite. See Github issue #8")
     public void sayYes_selectsMenuOption() throws Exception {
         driver.get("input.vxml");
         driver.say("yes");
@@ -128,7 +125,6 @@ public class JVoiceXmlDriverTest {
     }
 
     @Test
-    @Ignore("Test works in isolation but fails when run as part of suite. See Github issue #8")
     public void sayNo_selectsMenuOption() throws Exception {
         driver.get("input.vxml");
         driver.say("no");

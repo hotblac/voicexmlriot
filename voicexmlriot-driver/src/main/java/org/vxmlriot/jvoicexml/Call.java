@@ -123,16 +123,6 @@ public class Call {
     public void shutdown() {
         shutdownTextServer();
         shutdownSession();
-
-        // Kludge!
-        // TextServer / Session resources take time to clear down.
-        // I'm not yet sure what to monitor for shutdown completion.
-        // For now, just delay to reduce likelihood of race conditions.
-        try {
-            sleep(CALL_CLEAR_DELAY_MS);
-        } catch (InterruptedException e) {
-            LOGGER.warn("Interrupted while waiting for Call to shutdown", e);
-        }
     }
 
     private void shutdownTextServer() {

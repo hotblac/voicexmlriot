@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.xml.ssml.SsmlDocument;
+import org.vxmlriot.driver.EventDelay;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.CallNotActiveException;
@@ -35,6 +36,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
     private SsmlDocumentParser textResponseParser;
     private SsmlDocumentParser audioSrcParser;
     private Call call;
+    protected EventDelay delays;
 
     public JVoiceXmlDriver() {
     }
@@ -55,9 +57,12 @@ public class JVoiceXmlDriver implements VxmlDriver {
         this.audioSrcParser = audioSrcParser;
     }
 
+    public void setDelays(EventDelay delays) {
+        this.delays = delays;
+    }
+
     @Override
     public void get(String resource) throws DriverException {
-
         final URI uri = uriBuilder.build(resource);
         get(uri);
     }
@@ -80,6 +85,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     @Override
     public void enterDtmf(String digits) throws DriverException {
+        delays.delayBeforeInput();
         if (!callIsActive()) {
             throw new CallNotActiveException("Cannot get text response - no call is active");
         }
@@ -93,6 +99,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     @Override
     public void say(String... utterance) throws DriverException {
+        delays.delayBeforeInput();
         if (!callIsActive()) {
             throw new CallNotActiveException("Cannot get text response - no call is active");
         }
@@ -112,6 +119,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     @Override
     public List<String> getTextResponse() throws DriverException {
+        delays.delayBeforeResponse();
         if (!callIsActive()) {
             throw new CallNotActiveException("Cannot get text response - no call is active");
         }
@@ -127,6 +135,7 @@ public class JVoiceXmlDriver implements VxmlDriver {
 
     @Override
     public List<String> getAudioSrc() throws DriverException {
+        delays.delayBeforeResponse();
         if (!callIsActive()) {
             throw new CallNotActiveException("Cannot get audio response - no call is active");
         }
@@ -157,6 +166,8 @@ public class JVoiceXmlDriver implements VxmlDriver {
         jvxml.shutdown();
         jvxml.waitShutdownComplete();
         preventJvmTermination();
+
+        delays.delayAfterCallClear();
     }
 
     private void endCall() {

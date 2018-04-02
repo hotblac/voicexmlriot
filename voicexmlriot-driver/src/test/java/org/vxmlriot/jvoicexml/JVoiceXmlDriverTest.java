@@ -9,10 +9,12 @@ import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.event.error.BadFetchError;
 import org.jvoicexml.xml.ssml.SsmlDocument;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.vxmlriot.driver.EventDelay;
 import org.vxmlriot.exception.CallIsActiveException;
 import org.vxmlriot.exception.CallNotActiveException;
 import org.vxmlriot.exception.DriverException;
@@ -24,6 +26,7 @@ import org.vxmlriot.url.UriBuilder;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,10 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.vxmlriot.stubs.SsmlDocumentBuilder.ssmlDocument;
 
 
@@ -55,6 +55,7 @@ public class JVoiceXmlDriverTest {
     @Mock(name = "audioSrcParser") private SsmlDocumentParser audioSrcParser;
     @Mock private JVoiceXmlMain jvxml;
     @Mock private DocumentServer documentServer;
+    @Mock private EventDelay delays;
     @InjectMocks private JVoiceXmlDriver driver;
 
     @Before
@@ -130,6 +131,19 @@ public class JVoiceXmlDriverTest {
         assertThat(response, contains("Hello World!", "Goodbye!"));
     }
 
+    @Test
+    public void getTextResponse_isDelayed() throws Exception {
+        when(call.getSsmlResponse()).thenReturn(Collections.singletonList(null));
+        when(textResponseParser.parse(any())).thenReturn(Optional.of("Stub response"));
+
+        driver.get(START);
+        driver.getTextResponse();
+
+        InOrder eventOrder = inOrder(call, delays);
+        eventOrder.verify(delays).delayBeforeResponse();
+        eventOrder.verify(call).getSsmlResponse();
+    }
+
     @Test(expected = CallNotActiveException.class)
     public void getTextResponseWhenNoCallActive_throwsException() throws Exception {
         driver.getTextResponse();
@@ -173,6 +187,19 @@ public class JVoiceXmlDriverTest {
         assertThat(audioSrc, contains("welcomeMessage.wav", "disclaimerMessage.wav"));
     }
 
+    @Test
+    public void getAudioSrc_isDelayed() throws Exception {
+        when(call.getSsmlResponse()).thenReturn(Collections.singletonList(null));
+        when(audioSrcParser.parse(any())).thenReturn(Optional.of("Stub response"));
+
+        driver.get(START);
+        driver.getAudioSrc();
+
+        InOrder eventOrder = inOrder(call, delays);
+        eventOrder.verify(delays).delayBeforeResponse();
+        eventOrder.verify(call).getSsmlResponse();
+    }
+
     @Test(expected = CallNotActiveException.class)
     public void getAudioSrcWhenNoCallActive_throwsException() throws Exception {
         driver.getAudioSrc();
@@ -208,6 +235,16 @@ public class JVoiceXmlDriverTest {
         verify(call).enterDtmf("1234");
     }
 
+    @Test
+    public void enterDtmf_isDelayed() throws Exception {
+        driver.get(START);
+        driver.enterDtmf("1234");
+
+        InOrder eventOrder = inOrder(call, delays);
+        eventOrder.verify(delays).delayBeforeInput();
+        eventOrder.verify(call).enterDtmf("1234");
+    }
+
     @Test(expected = CallNotActiveException.class)
     public void enterDtmfWhenNoCallActive_throwsException() throws Exception {
         driver.enterDtmf("1234");
@@ -237,6 +274,16 @@ public class JVoiceXmlDriverTest {
         verify(call).sendUtterance("Hiya");
     }
 
+    @Test
+    public void sayUtterance_isDelayed() throws Exception {
+        driver.get(START);
+        driver.say("Hiya");
+
+        InOrder eventOrder = inOrder(call, delays);
+        eventOrder.verify(delays).delayBeforeInput();
+        eventOrder.verify(call).sendUtterance("Hiya");
+    }
+
     @Test(expected = CallNotActiveException.class)
     public void sayUtteranceWhenNoCallActive_throwsException() throws Exception {
         driver.say("Hiya");
@@ -255,6 +302,16 @@ public class JVoiceXmlDriverTest {
         driver.get(START);
         driver.shutdown();
         verify(call).shutdown();
+    }
+
+    @Test
+    public void shutdown_delaysForCallToClear() throws Exception {
+        driver.get(START);
+        driver.shutdown();
+
+        InOrder eventOrder = inOrder(call, delays);
+        eventOrder.verify(call).shutdown();
+        eventOrder.verify(delays).delayAfterCallClear();
     }
 
     @Test

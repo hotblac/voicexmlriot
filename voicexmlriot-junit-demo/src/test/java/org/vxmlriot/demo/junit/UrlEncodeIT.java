@@ -2,11 +2,9 @@ package org.vxmlriot.demo.junit;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
-import org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -19,13 +17,7 @@ import static org.hamcrest.Matchers.*;
  */
 public class UrlEncodeIT {
 
-    private static VxmlDriver driver;
-
-    @BeforeClass
-    public static void startDriver() {
-        VxmlDriverFactory.driverBuilder = new JVoiceXmlDriverBuilder();
-        driver = VxmlDriverFactory.getDriver();
-    }
+    private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
     @AfterClass
     public static void shutdownDriver() {
