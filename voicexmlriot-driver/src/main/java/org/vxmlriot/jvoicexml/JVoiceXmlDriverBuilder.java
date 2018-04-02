@@ -32,7 +32,7 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
     private String confDir = null;
     private UriBuilder uriBuilder = new ClasspathFileUriBuilder();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
-    private EventDelay delays = new EventDelay();
+    private EventDelay delays = defaultEventDelays();
 
     /**
      * Configure JVoiceXML from a custom Configuration class
@@ -100,6 +100,14 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
         startupListener.waitForStartup();
 
         return jvxml;
+    }
+
+    private static EventDelay defaultEventDelays() {
+        EventDelay delays = new EventDelay();
+        delays.setInputDelay(500);
+        delays.setResponseDelay(0);
+        delays.setCallClearDelay(0);
+        return delays;
     }
 
     class JVoiceXmlStartupListener implements JVoiceXmlMainListener {
