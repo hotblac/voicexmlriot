@@ -16,17 +16,18 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
+import java.io.File;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
-import static org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder.DEFAULT_CONFIG_DIR;
 import static org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder.PROPERTY_CONFIG_DIR;
 
 @RunWith(PowerMockRunner.class)
@@ -71,7 +72,11 @@ public class JVoiceXmlDriverBuilderTest {
     @Test
     public void buildJVoiceXmlDriver_setsConfigPathSystemProperty() {
         builder.build();
-        assertEquals(DEFAULT_CONFIG_DIR, System.getProperty(PROPERTY_CONFIG_DIR));
+
+        // Verify that config dir system property is set to the directory containing the config files
+        String confDir = System.getProperty(PROPERTY_CONFIG_DIR);
+        File configFile = new File(confDir, "jvoicexml.xml");
+        assertTrue(configFile.exists());
     }
 
     @Test

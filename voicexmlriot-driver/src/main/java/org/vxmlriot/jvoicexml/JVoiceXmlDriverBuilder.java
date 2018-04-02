@@ -11,6 +11,7 @@ import org.vxmlriot.parser.TextResponseParser;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -26,14 +27,8 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
      */
     static final String PROPERTY_CONFIG_DIR = "jvoicexml.config";
 
-    /**
-     * Use internal resources directory as default config directory.
-     * Can be overridden with {@link config(String)}
-     */
-    static final String DEFAULT_CONFIG_DIR = "src/main/resources";
-
     private Configuration config = null;
-    private String confDir = DEFAULT_CONFIG_DIR;
+    private String confDir = null;
     private UriBuilder uriBuilder = new ClasspathFileUriBuilder();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
 
@@ -49,7 +44,7 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
 
     /**
      * Configure JVoiceXML from an XML config file.
-     * @param confDir Directory containing jvoicexml.xml confiuration file
+     * @param confDir Directory containing jvoicexml.xml configuration file
      * @return this builder for method chaining
      */
     public JVoiceXmlDriverBuilder config(String confDir) {
@@ -66,6 +61,11 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
 
         if (config == null) {
             // Use default JVoiceXML XML based config
+            if (confDir == null) {
+                // Use classpath resources
+                final File configFile = new File(JVoiceXmlDriverBuilder.class.getClassLoader().getResource("jvoicexml.xml").getFile());
+                confDir = configFile.getParent();
+            }
             System.setProperty(PROPERTY_CONFIG_DIR, confDir);
             config = new JVoiceXmlConfiguration();
         }
