@@ -1,6 +1,7 @@
 package org.vxmlriot.jvoicexml.listener;
 
 import org.jvoicexml.client.text.TextListener;
+import org.jvoicexml.client.text.TextMessageEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 
 import java.net.InetSocketAddress;
@@ -22,22 +23,22 @@ public class TextListenerAdapter implements TextListener {
     }
 
     @Override
-    public void outputSsml(SsmlDocument document) {
+    public void outputSsml(TextMessageEvent textMessageEvent, SsmlDocument ssmlDocument) {
 
     }
 
     @Override
-    public void expectingInput() {
+    public void expectingInput(TextMessageEvent textMessageEvent) {
 
     }
 
     @Override
-    public void inputClosed() {
+    public void inputClosed(TextMessageEvent textMessageEvent) {
 
     }
 
     @Override
-    public void disconnected() {
+    public void disconnected(TextMessageEvent textMessageEvent) {
 
     }
 }

@@ -22,8 +22,8 @@ public class ResponseListenerTest {
         SsmlDocument response1 = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
         SsmlDocument response2 = ssmlDocument().withFilename("ssmlTextResponse_goodbye.xml").build();
 
-        listener.outputSsml(response1);
-        listener.outputSsml(response2);
+        listener.outputSsml(null, response1);
+        listener.outputSsml(null, response2);
         List<SsmlDocument> responses = listener.getCapturedResponses();
 
         assertThat(responses, contains(response1, response2));
@@ -43,8 +43,8 @@ public class ResponseListenerTest {
         });
 
         Thread responseThread = new Thread(() -> {
-            listener.outputSsml(response1);
-            listener.outputSsml(response2);
+            listener.outputSsml(null, response1);
+            listener.outputSsml(null, response2);
         });
 
         mainThread.start();
@@ -68,15 +68,15 @@ public class ResponseListenerTest {
         // Fire two instances of the same response document
         SsmlDocument response1 = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
         SsmlDocument response2 = ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build();
-        listener.outputSsml(response1);
-        listener.outputSsml(response2);
+        listener.outputSsml(null, response1);
+        listener.outputSsml(null, response2);
         List<SsmlDocument> responses = listener.getCapturedResponses();
         assertThat(responses, hasSize(1));
     }
 
     @Test
     public void clear_resetsState() throws Exception {
-        listener.outputSsml(ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build());
+        listener.outputSsml(null, ssmlDocument().withFilename("ssmlTextResponse_helloWorld.xml").build());
         assertThat(listener.getCapturedResponses(), not(empty()));
 
         listener.clear();

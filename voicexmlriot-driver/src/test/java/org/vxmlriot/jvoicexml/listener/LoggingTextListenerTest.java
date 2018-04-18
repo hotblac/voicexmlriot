@@ -38,26 +38,26 @@ public class LoggingTextListenerTest {
     @Test
     public void outputSsmlEvent_isLogged() throws Exception {
         final SsmlDocument ssml = ssmlDocument().withFilename("hello.vxml").build();
-        listener.outputSsml(ssml);
+        listener.outputSsml(null, ssml);
         assertThat(appender.getOutput(), containsString("outputSsml"));
         assertThat(appender.getOutput(), containsString(ssml.toString()));
     }
 
     @Test
     public void expectingInputEvent_isLogged() {
-        listener.expectingInput();
+        listener.expectingInput(null);
         assertThat(appender.getOutput(), containsString("expectingInput"));
     }
 
     @Test
     public void inputClosedEvent_isLogged() {
-        listener.inputClosed();
+        listener.inputClosed(null);
         assertThat(appender.getOutput(), containsString("inputClosed"));
     }
 
     @Test
     public void disconnectedEvent_isLogged() {
-        listener.disconnected();
+        listener.disconnected(null);
         assertThat(appender.getOutput(), containsString("disconnected"));
     }
 

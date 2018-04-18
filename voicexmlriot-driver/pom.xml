@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
-            <artifactId>org.jvoicexml.processor.srgs</artifactId>
+            <artifactId>org.jvoicexml.srgs</artifactId>
             <version>${jvoicexml.version}</version>
         </dependency>
         <dependency>
