@@ -1,6 +1,7 @@
 package org.vxmlriot.jvoicexml;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.*;
 import org.jvoicexml.client.text.TextListener;
 import org.jvoicexml.client.text.TextServer;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class CallBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(CallBuilder.class);
+    private static final Logger LOGGER = LogManager.getLogger(CallBuilder.class);
     static final int TEXT_SERVER_PORT = 4242;
 
     private JVoiceXmlMain jvxmlMain;

@@ -1,6 +1,7 @@
 package org.vxmlriot.jvoicexml;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.DocumentServer;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.xml.ssml.SsmlDocument;
@@ -29,7 +30,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
  */
 public class JVoiceXmlDriver implements VxmlDriver {
 
-    private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriver.class);
+    private static final Logger LOGGER = LogManager.getLogger(JVoiceXmlDriver.class);
 
     protected UriBuilder uriBuilder;
     protected CallBuilder callBuilder;

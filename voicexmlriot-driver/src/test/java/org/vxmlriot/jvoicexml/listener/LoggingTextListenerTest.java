@@ -1,7 +1,7 @@
 package org.vxmlriot.jvoicexml.listener;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvoicexml.xml.ssml.SsmlDocument;
@@ -18,7 +18,7 @@ public class LoggingTextListenerTest {
     /**
      * Attach a new appender to the logger for the class under test
      */
-    @Rule public LogAppenderResource appender = new LogAppenderResource(Logger.getLogger(LoggingTextListener.class)); 
+    @Rule public LogAppenderResource appender = new LogAppenderResource(LogManager.getLogger(LoggingTextListener.class));
     private LoggingTextListener listener = new LoggingTextListener();
 
     @Test

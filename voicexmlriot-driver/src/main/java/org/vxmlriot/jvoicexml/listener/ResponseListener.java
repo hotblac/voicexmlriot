@@ -1,6 +1,7 @@
 package org.vxmlriot.jvoicexml.listener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.client.text.TextMessageEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 
@@ -14,7 +15,7 @@ import static org.apache.commons.collections4.MapUtils.isEmpty;
 
 public class ResponseListener extends TextListenerAdapter {
 
-    private static final Logger LOGGER = Logger.getLogger(ResponseListener.class);
+    private static final Logger LOGGER = LogManager.getLogger(ResponseListener.class);
 
     /**
      * Time to wait for first response.

@@ -1,6 +1,7 @@
 package org.vxmlriot.driver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static java.lang.Thread.sleep;
 
@@ -10,7 +11,7 @@ import static java.lang.Thread.sleep;
  */
 public class EventDelay {
 
-    private static final Logger LOGGER = Logger.getLogger(EventDelay.class);
+    private static final Logger LOGGER = LogManager.getLogger(EventDelay.class);
 
     /**
      * Delay between requesting a response from the VXML browser and

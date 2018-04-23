@@ -1,6 +1,7 @@
 package org.vxmlriot.system;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -18,7 +19,7 @@ import static org.hamcrest.Matchers.*;
  */
 public class JVoiceXmlDriverTest {
 
-    private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(JVoiceXmlDriverTest.class);
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 
     @After

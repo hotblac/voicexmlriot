@@ -1,6 +1,7 @@
 package org.vxmlriot.jvoicexml;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.DtmfInput;
 import org.jvoicexml.Session;
 import org.jvoicexml.SessionListener;
@@ -26,7 +27,7 @@ import static java.lang.Thread.sleep;
  */
 public class Call {
 
-    private static final Logger LOGGER = Logger.getLogger(Call.class);
+    private static final Logger LOGGER = LogManager.getLogger(Call.class);
 
     /**
      * Time in milliseconds to wait for TextServer port to clear on shutdown

@@ -1,11 +1,12 @@
 package org.vxmlriot.jvoicexml.listener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.client.text.TextMessageEvent;
 
 public class InputStateListener extends TextListenerAdapter {
 
-    private static final Logger LOGGER = Logger.getLogger(InputStateListener.class);
+    private static final Logger LOGGER = LogManager.getLogger(InputStateListener.class);
     private boolean readyForInput = false;
 
     public boolean isReadyForInput() {
