@@ -94,6 +94,14 @@
     </bean>
 
     <!--
+     General properties for the telephony.
+     Add your own implementation of here, if special properties are needed.
+    -->
+    <bean id="org.jvoicexml.CallControlProperties"
+          class="org.jvoicexml.CallControlProperties">
+    </bean>
+
+    <!--
       Implementation platform to handle recognition and speech synthesis.
     -->
     <bean id="org.jvoicexml.ImplementationPlatformFactory"
@@ -106,5 +114,10 @@
     <!-- uncomment to generally disable DTMF recognition -->
     <bean id="org.jvoicexml.implementation.dtmf.BufferedDtmfInput"
           class="org.jvoicexml.implementation.dtmf.BufferedDtmfInput">
+        <property name="grammarParsers">
+            <list>
+                <bean class="org.jvoicexml.srgs.SrgsSisrXmlGrammarParser" />
+            </list>
+        </property>
     </bean>
 </beans>
