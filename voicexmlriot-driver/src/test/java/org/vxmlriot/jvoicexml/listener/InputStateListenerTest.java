@@ -16,20 +16,20 @@ public class InputStateListenerTest {
 
     @Test
     public void onExpectingInputEvent_readyForInput() {
-        inputState.expectingInput();
+        inputState.expectingInput(null);
         assertTrue(inputState.isReadyForInput());
     }
 
     @Test
     public void onInputClosed_notReadyForInput() {
-        inputState.expectingInput();
-        inputState.inputClosed();
+        inputState.expectingInput(null);
+        inputState.inputClosed(null);
         assertFalse(inputState.isReadyForInput());
     }
 
     @Test(timeout = 100)
     public void waitUntilReadyForInputAndIsCurrentlyReady_returnsImmediately() {
-        inputState.expectingInput();
+        inputState.expectingInput(null);
         inputState.waitUntilReadyForInput();
     }
 
@@ -42,7 +42,7 @@ public class InputStateListenerTest {
         waitingThread.join(100);
         assertTrue("Thread should still be running as it waits for input", waitingThread.isAlive());
 
-        inputState.expectingInput();
+        inputState.expectingInput(null);
         waitingThread.join(100);
         assertFalse("Thread should have completed - no longer waiting", waitingThread.isAlive());
     }

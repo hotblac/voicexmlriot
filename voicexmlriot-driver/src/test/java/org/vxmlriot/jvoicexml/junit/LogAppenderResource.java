@@ -1,13 +1,13 @@
 package org.vxmlriot.jvoicexml.junit;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.WriterAppender;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.StringLayout;
+import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.rules.ExternalResource;
 
-import java.io.ByteArrayOutputStream;
+import java.io.CharArrayWriter;
 
 /**
  * JUnit rule for testing output to Log4j. Handy for verifying logging.
@@ -16,25 +16,35 @@ import java.io.ByteArrayOutputStream;
 public class LogAppenderResource extends ExternalResource {
 
     private static final String APPENDER_NAME = "log4jRuleAppender";
-    private static final Layout LAYOUT = new SimpleLayout();
+
+    /**
+     * Logged messages contains level and message only.
+     * This allows us to test that level and message are set.
+     */
+    private static final String PATTERN = "%-5level %msg";
 
     private Logger logger;
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private Appender appender;
+    private final CharArrayWriter outContent = new CharArrayWriter();
 
-    public LogAppenderResource(Logger logger) {
-        this.logger = logger;
+    public LogAppenderResource(org.apache.logging.log4j.Logger logger) {
+        this.logger = (org.apache.logging.log4j.core.Logger)logger;
     }
 
     @Override
     protected void before() {
-        Appender appender = new WriterAppender(LAYOUT, outContent);
-        appender.setName(APPENDER_NAME);
+        StringLayout layout = PatternLayout.newBuilder().withPattern(PATTERN).build();
+        appender = WriterAppender.newBuilder()
+                .setTarget(outContent)
+                .setLayout(layout)
+                .setName(APPENDER_NAME).build();
+        appender.start();
         logger.addAppender(appender);
     }
 
     @Override
     protected void after() {
-        logger.removeAppender(APPENDER_NAME);
+        logger.removeAppender(appender);
     }
 
     public String getOutput() {

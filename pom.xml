@@ -4,7 +4,7 @@
 
     <groupId>org.voicexmlriot</groupId>
     <artifactId>voicexmlriot</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>VoiceXMLRiot aggregator pom</name>
     <description>
@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jvoicexml.version>0.7.7.GA</jvoicexml.version>
+        <jvoicexml.version>0.7.8-SNAPSHOT</jvoicexml.version>
     </properties>
 
     <scm>
@@ -41,7 +41,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>

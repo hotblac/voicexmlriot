@@ -1,9 +1,10 @@
 package org.vxmlriot.jvoicexml.listener;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.client.text.TextListener;
+import org.jvoicexml.client.text.TextMessageEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 
 import java.net.InetSocketAddress;
@@ -13,10 +14,10 @@ import java.net.InetSocketAddress;
  */
 public class LoggingTextListener implements TextListener{
 
-    private static final Logger LOGGER = Logger.getLogger(LoggingTextListener.class);
-    private Priority level = Level.DEBUG;
+    private static final Logger LOGGER = LogManager.getLogger(LoggingTextListener.class);
+    private Level level = Level.DEBUG;
 
-    public void setLevel(Priority level) {
+    public void setLevel(Level level) {
         this.level = level;
     }
 
@@ -31,22 +32,22 @@ public class LoggingTextListener implements TextListener{
     }
 
     @Override
-    public void outputSsml(SsmlDocument document) {
+    public void outputSsml(TextMessageEvent textMessageEvent, SsmlDocument document) {
         LOGGER.log(level, "outputSsml: " + document);
     }
 
     @Override
-    public void expectingInput() {
+    public void expectingInput(TextMessageEvent textMessageEvent) {
         LOGGER.log(level, "expectingInput");
     }
 
     @Override
-    public void inputClosed() {
+    public void inputClosed(TextMessageEvent textMessageEvent) {
         LOGGER.log(level, "inputClosed");
     }
 
     @Override
-    public void disconnected() {
+    public void disconnected(TextMessageEvent textMessageEvent) {
         LOGGER.log(level, "disconnected");
     }
 }

@@ -30,9 +30,23 @@
     <bean id="org.jvoicexml.DocumentServer" class="org.jvoicexml.documentserver.JVoiceXmlDocumentServer">
         <property name="schemeStrategies">
             <list>
-                <bean class="org.vxmlriot.jvoicexml.override.UrlEncodingHttpSchemeStrategy" />
+                <bean class="org.jvoicexml.documentserver.schemestrategy.HttpSchemeStrategy" />
                 <bean class="org.jvoicexml.documentserver.schemestrategy.FileSchemeStrategy" />
             </list>
+        </property>
+        <property name="documentStorage">
+            <bean class="org.jvoicexml.documentserver.jetty.DocumentStorage">
+                <!-- port number for the document storage -->
+                <!-- a value of 0 will start the storage at port 9595 -->
+                <!-- negative values cause that no storage will be started -->
+                <property name="storagePort" value="9595" />
+                <property name="grammarCreators">
+                    <list>
+                        <bean class="org.jvoicexml.documentserver.schemestrategy.builtin.BooleanGrammarCreator"/>
+                        <bean class="org.jvoicexml.documentserver.schemestrategy.builtin.DigitsGrammarCreator"/>
+                    </list>
+                </property>
+            </bean>
         </property>
     </bean>
 
@@ -80,6 +94,14 @@
     </bean>
 
     <!--
+     General properties for the telephony.
+     Add your own implementation of here, if special properties are needed.
+    -->
+    <bean id="org.jvoicexml.CallControlProperties"
+          class="org.jvoicexml.CallControlProperties">
+    </bean>
+
+    <!--
       Implementation platform to handle recognition and speech synthesis.
     -->
     <bean id="org.jvoicexml.ImplementationPlatformFactory"
@@ -92,5 +114,10 @@
     <!-- uncomment to generally disable DTMF recognition -->
     <bean id="org.jvoicexml.implementation.dtmf.BufferedDtmfInput"
           class="org.jvoicexml.implementation.dtmf.BufferedDtmfInput">
+        <property name="grammarParsers">
+            <list>
+                <bean class="org.jvoicexml.srgs.SrgsSisrXmlGrammarParser" />
+            </list>
+        </property>
     </bean>
 </beans>

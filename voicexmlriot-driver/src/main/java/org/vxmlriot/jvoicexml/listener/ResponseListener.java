@@ -1,6 +1,8 @@
 package org.vxmlriot.jvoicexml.listener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jvoicexml.client.text.TextMessageEvent;
 import org.jvoicexml.xml.ssml.SsmlDocument;
 
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import static org.apache.commons.collections4.MapUtils.isEmpty;
 
 public class ResponseListener extends TextListenerAdapter {
 
-    private static final Logger LOGGER = Logger.getLogger(ResponseListener.class);
+    private static final Logger LOGGER = LogManager.getLogger(ResponseListener.class);
 
     /**
      * Time to wait for first response.
@@ -46,7 +48,7 @@ public class ResponseListener extends TextListenerAdapter {
             Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Override
-    public synchronized void outputSsml(SsmlDocument document) {
+    public synchronized void outputSsml(TextMessageEvent textMessageEvent, SsmlDocument document) {
         capturedResponses.put(document.toString(), document);
         awaitingMoreResponses = true;
         notify();

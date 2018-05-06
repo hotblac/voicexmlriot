@@ -1,6 +1,7 @@
 package org.vxmlriot.jvoicexml;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvoicexml.Configuration;
 import org.jvoicexml.JVoiceXmlMain;
 import org.jvoicexml.JVoiceXmlMainListener;
@@ -21,7 +22,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(JVoiceXmlDriverBuilder.class);
+    private static final Logger LOGGER = LogManager.getLogger(JVoiceXmlDriverBuilder.class);
 
     /**
      * System property used by JVoiceXML to locate the config directory
