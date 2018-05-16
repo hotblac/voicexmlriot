@@ -14,7 +14,12 @@ import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 /**
  * Build instances of JVoiceXmlDriver.
@@ -25,12 +30,17 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
     private static final Logger LOGGER = LogManager.getLogger(JVoiceXmlDriverBuilder.class);
 
     /**
-     * System property used by JVoiceXML to locate the config directory
+     * Repository files to be loaded as classpath resources.
+     * TODO: Allow repository files to be injected so that JVoiceXML behaviour can be configured.
      */
-    static final String PROPERTY_CONFIG_DIR = "jvoicexml.config";
+    private static final List<String> REPOSITORY_FILES = Arrays.asList(
+            "ecmascript-datamodel.xml",
+            "jvxml-grammar.xml",
+            "text-implementation.xml",
+            "vxml2.1-profile.xml"
+    );
 
     private Configuration config = null;
-    private String confDir = null;
     private UriBuilder uriBuilder = new ClasspathFileUriBuilder();
     private JVoiceXmlStartupListener startupListener = new JVoiceXmlStartupListener();
     private EventDelay delays = defaultEventDelays();
@@ -42,16 +52,6 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
      */
     public JVoiceXmlDriverBuilder config(Configuration config) {
         this.config = config;
-        return this;
-    }
-
-    /**
-     * Configure JVoiceXML from an XML config file.
-     * @param confDir Directory containing jvoicexml.xml configuration file
-     * @return this builder for method chaining
-     */
-    public JVoiceXmlDriverBuilder config(String confDir) {
-        this.confDir = confDir;
         return this;
     }
 
@@ -68,14 +68,7 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
     public JVoiceXmlDriver build() {
 
         if (config == null) {
-            // Use default JVoiceXML XML based config
-            if (confDir == null) {
-                // Use classpath resources
-                final File configFile = new File(JVoiceXmlDriverBuilder.class.getClassLoader().getResource("jvoicexml.xml").getFile());
-                confDir = configFile.getParent();
-            }
-            System.setProperty(PROPERTY_CONFIG_DIR, confDir);
-            config = new JVoiceXmlConfiguration();
+            config = new JVoiceXmlConfiguration("jvoicexml.xml", REPOSITORY_FILES);
         }
 
         final JVoiceXmlMain jvxmlMain = startJvxmlInterpreter();
@@ -109,6 +102,17 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
         delays.setResponseDelay(0);
         delays.setCallClearDelay(0);
         return delays;
+    }
+
+    private static File resourceAsFile(String resourceName) {
+        final URL resource = JVoiceXmlDriverBuilder.class.getClassLoader().getResource(resourceName);
+        try {
+            return new File(resource.toURI());
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            LOGGER.warn("Failed to parse resource URL " + resource);
+            return new File(resource.getFile());
+
+        }
     }
 
     class JVoiceXmlStartupListener implements JVoiceXmlMainListener {
