@@ -10,7 +10,7 @@
 
     <Loggers>
         <Logger name="org.jvoicexml" level="debug"/>
-        <Logger name="org.jvoicexmlriot" level="debug"/>
+        <Logger name="org.vxmlriot" level="debug"/>
 
         <Root level="info">
             <AppenderRef ref="stdout" />
