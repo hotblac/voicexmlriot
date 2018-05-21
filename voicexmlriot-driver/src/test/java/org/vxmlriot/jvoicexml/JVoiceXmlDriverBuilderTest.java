@@ -17,20 +17,26 @@ import org.vxmlriot.driver.EventDelay;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
+import static org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder.DEFAULT_CONFIG_ROOT;
+import static org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder.DEFAULT_REPOSITORY_FILES;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
         JVoiceXmlDriverBuilder.class,
+        JVoiceXmlConfiguration.class,
         JVoiceXmlMain.class
 })
 public class JVoiceXmlDriverBuilderTest {
@@ -52,16 +58,22 @@ public class JVoiceXmlDriverBuilderTest {
 
     @Test
     public void buildJVoiceXmlDriver_hasDefaultDependencies() throws Exception {
+
+        final JVoiceXmlConfiguration expectedConfig = mock(JVoiceXmlConfiguration.class);
+        PowerMockito.whenNew(JVoiceXmlConfiguration.class)
+                .withArguments(DEFAULT_CONFIG_ROOT, DEFAULT_REPOSITORY_FILES)
+                .thenReturn(expectedConfig);
+
         JVoiceXmlDriver jvxmlDriver = builder.build();
         assertNotNull(jvxmlDriver.callBuilder);
         assertNotNull(jvxmlDriver.delays);
         assertThat(jvxmlDriver.uriBuilder, instanceOf(ClasspathFileUriBuilder.class));
-        verifyNew(JVoiceXmlMain.class).withArguments(any(JVoiceXmlConfiguration.class));
+        verifyNew(JVoiceXmlMain.class).withArguments(expectedConfig);
     }
 
     @Test
     public void buildJVoiceXmlDriver_buildsConfigurationFromClasspath() throws Exception {
-        JVoiceXmlDriver jvxmlDriver = builder.build();
+        builder.build();
 
         ArgumentCaptor<JVoiceXmlConfiguration> configCaptor = ArgumentCaptor.forClass(JVoiceXmlConfiguration.class);
         verifyNew(JVoiceXmlMain.class).withArguments(configCaptor.capture());
@@ -85,6 +97,30 @@ public class JVoiceXmlDriverBuilderTest {
         Configuration alternativeConfig = new AlternativeConfiguration();
         builder.config(alternativeConfig).build();
         verifyNew(JVoiceXmlMain.class).withArguments(alternativeConfig);
+    }
+
+    @Test
+    public void buildWithConfigRoot_usesConfigRoot() throws Exception {
+        String customRootConfig = "custom-config.xml";
+        final JVoiceXmlConfiguration expectedConfig = mock(JVoiceXmlConfiguration.class);
+        PowerMockito.whenNew(JVoiceXmlConfiguration.class)
+                .withArguments(eq(customRootConfig), anyListOf(String.class))
+                .thenReturn(expectedConfig);
+
+        builder.configRoot(customRootConfig).build();
+        verifyNew(JVoiceXmlMain.class).withArguments(expectedConfig);
+    }
+
+    @Test
+    public void buildWithRepositoryFiles_usesRepositoryFiles() throws Exception {
+        final List<String> customRepositoryFiles = Arrays.asList("file1.xml", "file2.xml");
+        final JVoiceXmlConfiguration expectedConfig = mock(JVoiceXmlConfiguration.class);
+        PowerMockito.whenNew(JVoiceXmlConfiguration.class)
+                .withArguments(anyString(), eq(customRepositoryFiles))
+                .thenReturn(expectedConfig);
+
+        builder.repositoryFiles(customRepositoryFiles).build();
+        verifyNew(JVoiceXmlMain.class).withArguments(expectedConfig);
     }
 
     @Test
