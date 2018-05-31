@@ -31,3 +31,24 @@ VoiceXMLRiot differs from VoiceXMLUnit in the following ways:
 * VoiceXMLRiot parses the VoiceXML responses and provides simple access to the TTS text / audio response strings. No XML parsing required.
 * VoiceXMLUnit provides simple assertions on TTS text / voice responses allowing exact match assertions only. VoiceXMLRiot provides direct access to the response strings allowing richer assertions, for example with [Hamcrest](https://github.com/hamcrest/JavaHamcrest) matchers.
 
+## Binaries
+Binaries are available at the [Disaster Area Maven Repo](http://maven.disasterarea.co.uk) only. This repo also hosts the JVoiceXML dependencies.
+
+To add this repo to a Maven build:
+
+```xml
+<repositories>
+    <repository>
+        <id>disasterarea</id>
+        <name>Disaster Area</name>
+        <url>https://maven.disasterarea.co.uk</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+Note that snapshot dependencies must be enabled for now as the JVoiceXML driver dependency is still in snapshot.
