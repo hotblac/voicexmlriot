@@ -56,47 +56,47 @@
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.130908-12</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.client</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.131213-7</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.client.text</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.131235-7</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.config</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.230035-9</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.interpreter.datamodel.ecmascript</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.131028-7</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.implementation.text</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.131741-7</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.srgs</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.131257-7</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.profile.vxml21</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.131405-7</version>
         </dependency>
         <dependency>
             <groupId>org.jvoicexml</groupId>
             <artifactId>org.jvoicexml.xml</artifactId>
-            <version>${jvoicexml.version}</version>
+            <version>0.7.8-20180520.132408-7</version>
         </dependency>
 
         <!-- Dependencies of JVoiceXML must be explicitly included.
