@@ -2,12 +2,15 @@ package org.vxmlriot.demo.junit;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -16,6 +19,9 @@ import static org.hamcrest.Matchers.*;
  * Verify that URL parameters are encoded correctly
  */
 public class UrlEncodeIT {
+
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     private static VxmlDriver driver = VxmlDriverFactory.getDriver();
 

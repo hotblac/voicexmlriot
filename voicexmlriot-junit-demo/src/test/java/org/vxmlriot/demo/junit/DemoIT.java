@@ -1,13 +1,13 @@
 package org.vxmlriot.demo.junit;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.Timeout;
 import org.vxmlriot.driver.VxmlDriver;
 import org.vxmlriot.driver.VxmlDriverFactory;
 import org.vxmlriot.jvoicexml.JVoiceXmlDriverBuilder;
 import org.vxmlriot.url.RelativeUrlUriBuilder;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -24,6 +24,8 @@ import static org.hamcrest.Matchers.*;
  * which will start the Tomcat server, run the tests and then shutdown.
  */
 public class DemoIT {
+
+    @Rule public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     private static final String APP_ROOT = "http://localhost:9090/voicexmlriot-junit-demo/";
 
