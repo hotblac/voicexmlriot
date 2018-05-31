@@ -58,6 +58,8 @@ public class JVoiceXmlDriverTest {
     @Test
     public void getTextResponse_returnsAllResponses() throws Exception {
         driver.get("hello.vxml");
+        Thread.sleep(500); // Workaround for Issue #8 intermittent test fails.
+                                 // TODO Use system level Delays
         List<String> textResponse = driver.getTextResponse();
         assertThat(textResponse, contains(
                 "Hello World!",
