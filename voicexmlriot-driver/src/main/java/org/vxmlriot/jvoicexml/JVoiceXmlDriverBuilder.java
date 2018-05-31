@@ -13,9 +13,6 @@ import org.vxmlriot.parser.TextResponseParser;
 import org.vxmlriot.url.ClasspathFileUriBuilder;
 import org.vxmlriot.url.UriBuilder;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -79,7 +76,6 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
     /**
      * Use a custom UriBuilder implementation. This is used to customise
      * resolution of VoiceXML page URLs.
-     * @param uriBuilder
      * @return this builder for method chaining
      */
     public JVoiceXmlDriverBuilder uriBuilder(UriBuilder uriBuilder) {
@@ -89,7 +85,6 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
 
     /**
      * Use a custom set of event delays.
-     * @param delays
      * @return this builder for method chaining
      */
     public JVoiceXmlDriverBuilder eventDelays(EventDelay delays) {
@@ -134,17 +129,6 @@ public class JVoiceXmlDriverBuilder implements VxmlDriverBuilder {
         delays.setResponseDelay(0);
         delays.setCallClearDelay(0);
         return delays;
-    }
-
-    private static File resourceAsFile(String resourceName) {
-        final URL resource = JVoiceXmlDriverBuilder.class.getClassLoader().getResource(resourceName);
-        try {
-            return new File(resource.toURI());
-        } catch (URISyntaxException | IllegalArgumentException e) {
-            LOGGER.warn("Failed to parse resource URL " + resource);
-            return new File(resource.getFile());
-
-        }
     }
 
     class JVoiceXmlStartupListener implements JVoiceXmlMainListener {

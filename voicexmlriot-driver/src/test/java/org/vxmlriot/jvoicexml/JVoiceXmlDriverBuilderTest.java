@@ -87,7 +87,7 @@ public class JVoiceXmlDriverBuilderTest {
     }
 
     @Test
-    public void buildJVoiceXmlDriver_startsJvxmlInterpreter() throws Exception {
+    public void buildJVoiceXmlDriver_startsJvxmlInterpreter() {
         builder.build();
         verify(jvxml).start();
     }
